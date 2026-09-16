@@ -78,10 +78,6 @@
     });
   });
 
-  /* ── 협업 과정: 상단 선이 그려집니다 ─────────────────── */
-  var timeline = $('#timeline');
-  if (timeline) onView(timeline, function (t) { t.classList.add('drawn'); }, { threshold: 0.25 });
-
   /* ── 히어로 심볼: 한 획으로 그려집니다 ───────────────── */
   var heroMark = $('.hero-mark');
   if (heroMark && !reduce) {
@@ -99,14 +95,11 @@
   }
 
   /* ── 접근 3단계: 보고 있는 카드와 카운터 ─────────────── */
-  var apCount = $('#apcount');
-  var apItems = $$('.approach-list > li');
-  if (apCount && apItems.length && 'IntersectionObserver' in window) {
+    var apItems = $$('.approach-list > li');
+  if (apItems.length && 'IntersectionObserver' in window) {
     var apIo = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
-        var i = apItems.indexOf(e.target);
         e.target.classList.toggle('on', e.isIntersecting);
-        if (e.isIntersecting) apCount.textContent = '0' + (i + 1);
       });
     }, { threshold: 0.55 });
     apItems.forEach(function (li) { apIo.observe(li); });
@@ -158,7 +151,7 @@
   });
 
   /* ── 채널: 세로 스크롤을 가로 이동으로 ───────────────── */
-  var pin = $('#hpin'), stage = $('.hpin-stage'), track = $('#htrack'), hbar = $('#hbar');
+  var pin = $('#hpin'), stage = $('.hpin-stage'), track = $('#htrack');
   var travel = 0, pinnable = false;
 
   function layoutPin() {
@@ -177,10 +170,37 @@
 
   /* ── 마퀴: 계속 흐르다가 스크롤하면 빨라집니다 ───────── */
   var mtrack = $('#mtrack');
+  var mBase = null;
   var mOffset = 0, mHalf = 0;
+
+  function cloneSet(nodes) {
+    return nodes.map(function (n) {
+      var c = n.cloneNode(true);
+      c.removeAttribute('alt');      // 복제본은 읽히지 않도록
+      c.setAttribute('alt', '');
+      c.setAttribute('aria-hidden', 'true');
+      return c;
+    });
+  }
+
+  // 트랙 절반이 화면폭보다 좁으면 되감을 때 빈틈이 생깁니다.
+  // 컨테이너를 덮을 때까지 세트를 늘린 뒤, 전체를 한 번 복제해
+  // 정확히 같은 두 덩어리로 만듭니다.
   function measureMarquee() {
     if (!mtrack) return;
+    if (!mBase) mBase = [].slice.call(mtrack.children);
+    mtrack.innerHTML = '';
+    mBase.forEach(function (n) { mtrack.appendChild(n); });
+
+    var box = mtrack.parentElement.clientWidth;
+    var guard = 0;
+    while (mtrack.scrollWidth < box && guard++ < 16) {
+      cloneSet(mBase).forEach(function (n) { mtrack.appendChild(n); });
+    }
+    cloneSet([].slice.call(mtrack.children)).forEach(function (n) { mtrack.appendChild(n); });
+
     mHalf = mtrack.scrollWidth / 2;
+    mOffset = 0;
   }
 
   /* ── 스크롤 루프 ─────────────────────────────────────── */
@@ -214,7 +234,6 @@
       if (pinnable && pin && travel > 0) {
         var p2 = clamp(-pin.getBoundingClientRect().top / travel, 0, 1);
         track.style.transform = 'translate3d(' + (-p2 * travel) + 'px,0,0)';
-        if (hbar) hbar.style.width = (p2 * 100) + '%';
       }
     }
     ticking = false;
