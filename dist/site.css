@@ -234,7 +234,11 @@ body::after{
   display:flex;flex-direction:column;justify-content:center;gap:clamp(30px,5vh,62px);
   padding:clamp(80px,10vh,120px) 0 clamp(44px,7vh,80px);
 }
-.hpin-head{padding:0 var(--pad);max-width:1000px}
+/* --pad 를 쓰는 요소에는 max-width 를 걸지 않습니다.
+   padding 의 %% 는 부모 폭 기준이라, 박스를 좁히면 패딩이 남아
+   글자 자리가 0 이 됩니다. 글 길이는 안쪽 요소에서 제한합니다. */
+.hpin-head{padding:0 var(--pad)}
+.hpin-head h2,.hpin-head .sub{max-width:34ch}
 .hpin-head h2{font-size:clamp(28px,3.8vw,58px);line-height:1.24;letter-spacing:-.05em;margin:0}
 
 .hpin-track{display:flex;gap:clamp(18px,1.8vw,28px);padding:0 var(--pad);will-change:transform}
@@ -261,8 +265,9 @@ body::after{
 .chan-desc{margin-top:22px;font-size:.85rem;color:var(--muted)}
 .chan-note{
   margin:0;padding:0 var(--pad) clamp(70px,10vh,110px);
-  font-size:.8rem;line-height:1.95;color:var(--muted);max-width:74ch;
+  font-size:.8rem;line-height:1.95;color:var(--muted);
 }
+.chan-note span{display:block;max-width:74ch}
 
 /* ══ 06 협업 과정 ═════════════════════════════════════════ */
 .process{position:relative;background:var(--white);padding:clamp(80px,12vh,150px) var(--pad)}
