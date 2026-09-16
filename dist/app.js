@@ -16,3 +16,8 @@ const data=[['BEAUTY & LIFESTYLE','취향이 만나는 곳에서','새롭게 발
 const panel=document.querySelector('.channel-display');panel.id='channel-info';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby','tab-0');const tabs=[...document.querySelectorAll('[data-channel]')];
 function select(i){tabs.forEach((b,j)=>{b.setAttribute('aria-selected',String(i===j));b.tabIndex=i===j?0:-1});const d=data[i];document.querySelector('#channel-en').textContent=d[0];document.querySelector('#channel-caption').textContent=d[1];document.querySelector('#channel-title').textContent=d[2];document.querySelector('#channel-count').textContent=`0${i+1} — 04`;panel.style.background=d[3];panel.setAttribute('aria-labelledby',`tab-${i}`);document.querySelector('.channel-symbol').style.transform=`rotate(${-15+i*45}deg) scale(1.04)`}
 tabs.forEach((b,i)=>{b.addEventListener('click',()=>select(i));b.addEventListener('keydown',e=>{let j=i;if(e.key==='ArrowDown'||e.key==='ArrowRight')j=(i+1)%4;else if(e.key==='ArrowUp'||e.key==='ArrowLeft')j=(i+3)%4;else if(e.key==='Home')j=0;else if(e.key==='End')j=3;else return;e.preventDefault();select(j);tabs[j].focus()})});
+
+document.querySelectorAll('.faq-list details').forEach(item=>item.addEventListener('toggle',()=>{
+  if(!item.open)return;
+  document.querySelectorAll('.faq-list details').forEach(other=>{if(other!==item)other.open=false});
+}));
