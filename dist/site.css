@@ -21,7 +21,7 @@
   /* 글자 (전부 그레이 계열, 검정 없음) */
   --ink:#33342E;          /* 제목 */
   --body:#55564F;         /* 본문 */
-  --muted:#7B7C74;        /* 보조 */
+  --muted:#6B6C64;        /* 보조 — 흰색·연노랑 위 4.5:1 확보 */
 
   --display:'Panchang','Pretendard',system-ui,sans-serif;
   --sans:'Pretendard',system-ui,-apple-system,sans-serif;
@@ -106,8 +106,9 @@ body::after{
 .ghost:hover{background:var(--ink);color:var(--white);transform:translateY(-2px)}
 
 .textlink{
-  display:inline-flex;align-items:center;font-size:.9rem;color:var(--body);
-  padding:8px 0;transition:color .3s,opacity .3s;
+  display:inline-flex;align-items:center;min-height:44px;
+  font-size:.9rem;color:var(--body);
+  padding:8px 2px;transition:color .3s,opacity .3s;
 }
 .textlink:hover{opacity:.6}
 
@@ -124,6 +125,7 @@ body::after{
   height:92px;transition:height .5s ease;
 }
 #siteheader.solid .head-inner{height:74px}
+.brandmark{display:flex;align-items:center;min-height:44px}
 .brandmark img{width:clamp(130px,11vw,172px);height:auto}
 #siteheader nav{display:flex;gap:clamp(20px,2.2vw,36px);font-size:.9rem;color:var(--body)}
 #siteheader nav a{transition:color .3s,opacity .3s}
@@ -326,13 +328,14 @@ body::after{
 .contact h2{font-size:clamp(30px,4.4vw,68px);line-height:1.22;letter-spacing:-.05em;margin:0}
 .contact .sub{color:#5b5730;max-width:36ch;text-align:center}
 .contact .pill{margin-top:38px}
-.contact small{display:block;margin-top:20px;font-size:.8rem;color:#6f6a3f}
+.contact small{display:block;margin-top:20px;font-size:.8rem;color:#5F5B33}
 
 /* ══ 푸터 ═════════════════════════════════════════════════ */
 footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(34px,4vh,46px)}
 .foot-top{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:clamp(40px,6vh,64px)}
 .foot-logo{width:clamp(126px,10vw,160px);height:auto;opacity:.55}
-.totop{margin-left:auto;font-size:.9rem;color:var(--body)}
+.totop{display:inline-flex;align-items:center;min-height:44px;padding:0 2px;
+  margin-left:auto;font-size:.9rem;color:var(--body)}
 .totop:hover{opacity:.6}
 .foot-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
 
@@ -391,8 +394,8 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   #siteheader.solid .head-inner{height:58px}
   .brandmark img{width:104px}
   /* 헤더 버튼 두 개가 로고와 한 줄에 들어가야 합니다 */
-  .ghost{padding:10px 13px;font-size:.75rem;min-height:40px}
-  .pill{padding:11px 16px;font-size:.78rem;min-height:40px}
+  .ghost{padding:10px 13px;font-size:.75rem;min-height:44px}
+  .pill{padding:11px 16px;font-size:.78rem;min-height:44px}
 }
 @media(max-width:700px){
   .pill.lg{padding:15px 24px;font-size:.85rem;min-height:46px}
@@ -421,13 +424,13 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
 @media(max-width:380px){
   .head-inner{gap:6px}
   .brandmark img{width:86px}
-  .ghost{padding:9px 11px;font-size:.7rem}
-  .pill{padding:10px 13px;font-size:.72rem}
+  .ghost{padding:9px 11px;font-size:.7rem;min-height:44px}
+  .pill{padding:10px 13px;font-size:.72rem;min-height:44px}
 @media(max-width:340px){
   .head-inner{gap:4px}
   .brandmark img{width:78px}
-  .ghost{padding:9px 8px}
-  .pill{padding:10px 10px}
+  .ghost{padding:9px 8px;min-height:44px}
+  .pill{padding:10px 10px;min-height:44px}
 }
 }
 
