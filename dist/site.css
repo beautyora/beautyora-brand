@@ -1,0 +1,447 @@
+@import url('https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700,800&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* ============================================================
+   BEAUTYORA — 브랜드의 다음 무대
+   화이트 · 연노랑(#F1EB9D) · 그레이 세 가족으로만 구성합니다.
+   검정 면, 괘선, 작은 영문 라벨은 쓰지 않습니다.
+   ============================================================ */
+
+:root{
+  /* 그라운드 */
+  --white:#FFFFFF;
+  --paper:#FAFAF7;        /* 흰색에 아주 옅은 온기 */
+  --grey-bg:#EFEFEA;      /* 카드와 푸터가 앉는 면 */
+
+  /* 브랜드 */
+  --yellow:#F1EB9D;       /* ← 핵심 컬러 */
+  --yellow-lt:#F8F5D2;    /* 한 단계 옅게 — 넓은 면에 */
+  --yellow-dp:#CFC56A;    /* 한 단계 짙게 — 선·심볼에 */
+
+  /* 글자 (전부 그레이 계열, 검정 없음) */
+  --ink:#33342E;          /* 제목 */
+  --body:#55564F;         /* 본문 */
+  --muted:#6B6C64;        /* 보조 — 흰색·연노랑 위 4.5:1 확보 */
+
+  --display:'Panchang','Pretendard',system-ui,sans-serif;
+  --sans:'Pretendard',system-ui,-apple-system,sans-serif;
+
+  /* ── 폭 제한: 4K까지 콘텐츠가 벌어지지 않도록 ──────────
+     --pad 하나로 좌우 여백과 최대폭을 동시에 처리합니다.
+     화면이 --maxw보다 넓어지면 남는 폭이 그대로 여백이 됩니다. */
+  --maxw:1360px;
+  --gutter:clamp(20px,5vw,72px);
+  --pad:max(var(--gutter),calc((100% - var(--maxw)) / 2));
+
+  --radius:24px;
+  --secY:clamp(80px,12vh,150px);   /* 섹션 공통 세로 여백 */
+}
+
+/* 큰 화면에서는 폭과 글자를 함께 키웁니다 */
+@media(min-width:1800px){ :root{--maxw:1500px} html{font-size:17px} }
+@media(min-width:2400px){ :root{--maxw:1680px} html{font-size:18px} }
+@media(min-width:3200px){ :root{--maxw:1840px} html{font-size:19px} }
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:calc(100px + env(safe-area-inset-top,0px));
+  -webkit-text-size-adjust:100%;
+}
+
+body{
+  margin:0;
+  background:var(--white);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:1rem;
+  line-height:1.75;
+  word-break:keep-all;
+  overflow-x:hidden;
+}
+
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;font-family:var(--display);font-weight:700;text-wrap:balance}
+p{margin:0}
+ol,ul{margin:0;padding:0;list-style:none}
+
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--ink);color:var(--white);padding:12px 18px}
+.skip:focus{left:0}
+
+:where(a,button,summary):focus-visible{outline:3px solid var(--yellow-dp);outline-offset:4px;border-radius:6px}
+
+.sub{
+  font-size:clamp(15px,1.1vw,18px);line-height:1.9;color:var(--muted);
+  max-width:40ch;margin-top:20px;
+}
+
+/* 아주 옅은 질감 — 단색 면이 밋밋해지지 않도록 */
+body::after{
+  content:'';position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.14;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
+}
+
+/* ── 버튼 ─────────────────────────────────────────────────── */
+.pill{
+  display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
+  padding:16px 30px;border-radius:40px;
+  background:var(--ink);color:var(--white);
+  font-size:.9rem;font-weight:500;min-height:48px;
+  transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s,background .45s;
+}
+.pill:hover{transform:translateY(-3px);background:#43443C;box-shadow:0 16px 32px #33342e29}
+.pill:active{transform:translateY(-1px)}
+.pill.lg{padding:20px 38px;font-size:.95rem}
+
+.ghost{
+  display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
+  padding:14px 22px;border-radius:40px;background:#33342e0f;
+  font-size:.85rem;min-height:46px;color:var(--body);
+  transition:background .4s,color .4s,transform .45s cubic-bezier(.16,1,.3,1);
+}
+.ghost:hover{background:var(--ink);color:var(--white);transform:translateY(-2px)}
+
+.textlink{
+  display:inline-flex;align-items:center;min-height:44px;
+  font-size:.9rem;color:var(--body);
+  padding:8px 2px;transition:color .3s,opacity .3s;
+}
+.textlink:hover{opacity:.6}
+
+/* ── 헤더 ─────────────────────────────────────────────────── */
+#siteheader{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+  padding:0 var(--pad);
+  background:#ffffff00;
+  transition:background .5s ease,backdrop-filter .5s ease;
+}
+#siteheader.solid{background:#fffffff2;backdrop-filter:blur(20px)}
+.head-inner{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  height:92px;transition:height .5s ease;
+}
+#siteheader.solid .head-inner{height:74px}
+.brandmark{display:flex;align-items:center;min-height:44px}
+.brandmark img{width:clamp(130px,11vw,172px);height:auto}
+#siteheader nav{display:flex;gap:clamp(20px,2.2vw,36px);font-size:.9rem;color:var(--body)}
+#siteheader nav a{transition:color .3s,opacity .3s}
+#siteheader nav a:hover{color:var(--ink);opacity:.65}
+.header-actions{display:flex;align-items:center;gap:10px}
+
+/* ══ 01 히어로 — 연노랑이 화면을 갖는 첫 순간 ═══════════════ */
+.hero{
+  position:relative;overflow:hidden;background:var(--yellow);
+  padding:0 var(--pad) clamp(60px,9vh,110px);
+  margin-top:-92px;padding-top:92px;
+}
+/* 심볼을 콘텐츠 폭에 묶습니다 — 안 그러면 4K에서 혼자 멀리 떨어집니다 */
+.hero-markwrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:flex;justify-content:center}
+.hero-markinner{position:relative;width:100%;max-width:var(--maxw)}
+.hero-mark{
+  position:absolute;right:-24%;top:-14%;width:116%;height:auto;
+  fill:none;stroke:var(--yellow-dp);stroke-width:5;opacity:.5;
+  will-change:transform;
+}
+.hero-inner{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(32px,4vw,80px);
+  align-items:center;min-height:clamp(560px,76vh,780px);
+  padding:clamp(30px,5vh,60px) 0 0;
+}
+.hero h1{font-size:clamp(44px,6.2vw,104px);line-height:1.14;letter-spacing:-.055em;margin:0 0 28px}
+.lead{font-size:clamp(16px,1.25vw,20px);line-height:1.9;color:#5b5730;max-width:33ch}
+.hero-cta{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:42px}
+.hero-cta .textlink{color:#5b5730}
+
+.hero-shot{margin:0}
+.hero-shot img{
+  width:100%;height:clamp(340px,54vh,600px);object-fit:cover;
+  border-radius:var(--radius) var(--radius) clamp(60px,9vw,130px) var(--radius);
+  box-shadow:0 34px 80px #8d874a2e;
+}
+
+/* ══ 02 파트너 ════════════════════════════════════════════ */
+.partners{background:var(--white);padding:clamp(56px,8vh,96px) var(--pad);overflow:hidden}
+.partners-label{margin-bottom:34px;font-size:.85rem;color:var(--muted)}
+.marquee{
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.marquee-track{display:flex;width:max-content;align-items:center;gap:clamp(48px,6vw,96px);will-change:transform}
+.marquee-track img{
+  height:clamp(40px,3.4vw,54px);width:auto;object-fit:contain;
+  filter:grayscale(1);opacity:.6;transition:opacity .4s,filter .4s;
+}
+.marquee-track img[src$="mybestroom.svg"]{height:clamp(52px,4.4vw,72px)}
+.marquee-track img:hover{opacity:1;filter:grayscale(0)}
+
+/* ══ 03 스테이트먼트 ══════════════════════════════════════ */
+.statement{background:var(--white);padding:var(--secY) var(--pad)}
+.statement h2{
+  font-size:clamp(32px,4.9vw,80px);line-height:1.24;letter-spacing:-.05em;
+  margin:0 0 clamp(52px,8vh,100px);
+}
+.statement .dim{color:#B9BAA8}
+.statement-body{
+  display:grid;grid-template-columns:minmax(180px,320px) 1fr;
+  gap:clamp(34px,5vw,90px);align-items:center;
+}
+.masked{margin:0;aspect-ratio:2156/1952}
+.masked img{
+  width:100%;height:100%;object-fit:cover;
+  -webkit-mask:url(assets/symbol.svg) center/contain no-repeat;
+          mask:url(assets/symbol.svg) center/contain no-repeat;
+}
+.statement-body p{font-size:clamp(16px,1.3vw,21px);line-height:2;color:var(--body);max-width:50ch}
+
+/* ══ 04 접근 3단계 ════════════════════════════════════════ */
+.approach{
+  position:relative;background:var(--paper);
+  display:grid;grid-template-columns:1fr 1.12fr;gap:clamp(34px,5vw,90px);
+  padding:var(--secY) var(--pad);
+}
+.approach::before{content:'';position:absolute;inset:0 0 auto;height:130px;background:linear-gradient(var(--white),var(--paper))}
+.approach-head{position:sticky;top:clamp(120px,17vh,180px)}
+.approach h2{font-size:clamp(30px,4vw,62px);line-height:1.24;letter-spacing:-.05em;margin:0}
+
+.approach-list{display:grid;gap:clamp(18px,2.2vw,28px)}
+.approach-list li{
+  background:var(--white);border-radius:var(--radius);
+  padding:clamp(30px,3.2vw,50px);
+  box-shadow:0 20px 44px #33342e0d;
+  transition:transform .55s cubic-bezier(.16,1,.3,1),box-shadow .55s;
+}
+.approach-list li.on{transform:translateY(-6px);box-shadow:0 30px 60px #33342e14}
+.glyph{
+  display:grid;place-items:center;width:clamp(56px,5vw,72px);aspect-ratio:1;
+  border-radius:22px;background:var(--yellow);margin-bottom:clamp(24px,2.6vw,34px);
+}
+.glyph svg{width:46%;height:46%;fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.approach-list h3{font-size:clamp(20px,1.65vw,27px);letter-spacing:-.04em;margin:0 0 14px}
+.approach-list p{font-size:.95rem;line-height:1.95;color:var(--muted)}
+
+/* ══ 05 채널 — 가로 스크롤 핀 ═════════════════════════════ */
+.channels{position:relative;background:var(--yellow-lt);padding-bottom:var(--secY)}
+.channels::before{content:'';position:absolute;inset:0 0 auto;height:130px;background:linear-gradient(var(--paper),var(--yellow-lt));z-index:2;pointer-events:none}
+.hpin{position:relative;height:340vh}
+.hpin-stage{
+  position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;gap:clamp(30px,5vh,62px);
+  padding:clamp(80px,10vh,120px) 0 clamp(44px,7vh,80px);
+}
+/* --pad 를 쓰는 요소에는 max-width 를 걸지 않습니다.
+   padding 의 %% 는 부모 폭 기준이라, 박스를 좁히면 패딩이 남아
+   글자 자리가 0 이 됩니다. 글 길이는 안쪽 요소에서 제한합니다. */
+.hpin-head{padding:0 var(--pad)}
+.hpin-head h2,.hpin-head .sub{max-width:34ch}
+.hpin-head h2{font-size:clamp(28px,3.8vw,58px);line-height:1.24;letter-spacing:-.05em;margin:0}
+
+.hpin-track{display:flex;gap:clamp(18px,1.8vw,28px);padding:0 var(--pad);will-change:transform}
+.chan{
+  position:relative;flex:0 0 clamp(290px,31vw,440px);
+  min-height:clamp(320px,42vh,440px);
+  background:var(--white);border-radius:var(--radius);
+  padding:clamp(28px,2.6vw,38px);overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  box-shadow:0 22px 48px #8d874a1a;
+  transition:transform .55s cubic-bezier(.16,1,.3,1),box-shadow .55s;
+}
+.chan:hover{transform:translateY(-8px);box-shadow:0 34px 68px #8d874a29}
+.chan-mark{
+  position:absolute;right:-26%;top:8%;width:82%;height:auto;
+  fill:var(--yellow);opacity:.5;pointer-events:none;
+  transition:transform .9s cubic-bezier(.16,1,.3,1);
+}
+.chan:hover .chan-mark{transform:rotate(-14deg) scale(1.08)}
+.chan-body{position:relative;z-index:1}
+.chan h3{font-size:clamp(19px,1.6vw,25px);letter-spacing:-.04em;margin:0 0 16px}
+.chan-cap{font-size:.95rem;line-height:1.85;color:var(--muted)}
+.chan-cap b{display:block;font-weight:600;color:var(--body)}
+.chan-desc{margin-top:22px;font-size:.85rem;color:var(--muted)}
+.chan-note{margin:16px 0 0;font-size:.8rem;line-height:1.85;color:var(--muted)}
+.chan-note span{display:block;max-width:64ch}
+
+/* ══ 06 협업 과정 ═════════════════════════════════════════ */
+.process{position:relative;background:var(--white);padding:var(--secY) var(--pad)}
+.process::before{content:'';position:absolute;inset:0 0 auto;height:130px;background:linear-gradient(var(--yellow-lt),var(--white))}
+.process-head{position:relative;max-width:800px;margin-bottom:clamp(56px,8vh,100px)}
+.process h2{font-size:clamp(30px,4vw,62px);line-height:1.24;letter-spacing:-.05em;margin:0}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.6vw,40px)}
+.step{
+  display:grid;place-items:center;width:clamp(48px,4.4vw,62px);aspect-ratio:1;
+  border-radius:50%;background:var(--yellow);
+  font-family:var(--display);font-size:clamp(17px,1.5vw,22px);color:var(--ink);
+}
+.timeline h3{font-size:clamp(19px,1.5vw,24px);letter-spacing:-.04em;margin:clamp(26px,2.6vw,36px) 0 14px}
+.timeline p{font-size:.95rem;line-height:1.95;color:var(--muted)}
+
+/* ══ 07 FAQ — 괘선 없이 카드로 구분 ═══════════════════════ */
+.faq{
+  position:relative;background:var(--paper);
+  display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(34px,5vw,90px);
+  padding:var(--secY) var(--pad);
+}
+.faq::before{content:'';position:absolute;inset:0 0 auto;height:130px;background:linear-gradient(var(--white),var(--paper))}
+.faq-head{position:sticky;top:clamp(120px,17vh,180px);align-self:start}
+.faq h2{font-size:clamp(28px,3.6vw,56px);line-height:1.24;letter-spacing:-.05em;margin:0}
+.faq-list{display:grid;gap:10px}
+.faq-list details{background:var(--white);border-radius:20px;overflow:hidden;transition:box-shadow .45s}
+.faq-list details[open]{box-shadow:0 18px 40px #33342e0f}
+.faq-list summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;gap:20px;
+  padding:clamp(20px,2vw,28px) clamp(22px,2.2vw,32px);
+  font-size:clamp(15px,1.15vw,18px);font-weight:600;line-height:1.6;
+  transition:background .35s;
+}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary:hover{background:var(--yellow-lt)}
+.faq-list summary b{position:relative;flex:0 0 14px;height:14px;margin-left:auto}
+.faq-list summary b::before,.faq-list summary b::after{
+  content:'';position:absolute;inset:50% 0 auto;height:1.5px;background:var(--muted);
+  transform:translateY(-50%);transition:transform .45s cubic-bezier(.16,1,.3,1);
+}
+.faq-list summary b::after{transform:translateY(-50%) rotate(90deg)}
+.faq-list details[open] summary b::after{transform:translateY(-50%) rotate(0)}
+.faq-list details>div{overflow:hidden}
+.faq-list details p{
+  padding:0 clamp(22px,2.2vw,32px) clamp(24px,2.2vw,30px);
+  font-size:.95rem;line-height:1.95;color:var(--muted);max-width:62ch;
+}
+
+/* ══ 08 CTA — 연노랑이 화면을 갖는 마지막 순간 ════════════ */
+.contact{
+  position:relative;overflow:hidden;background:var(--yellow);
+  padding:clamp(110px,16vh,200px) var(--pad);text-align:center;
+}
+.contact::before{content:'';position:absolute;inset:0 0 auto;height:130px;background:linear-gradient(var(--paper),var(--yellow))}
+.contact-mark{
+  position:absolute;left:50%;top:50%;width:min(180vw,calc(var(--maxw) * 1.55));height:auto;
+  transform:translate(-50%,-50%);
+  fill:var(--white);opacity:.4;pointer-events:none;will-change:transform;
+}
+.contact-inner{position:relative;z-index:1;display:grid;justify-items:center}
+.contact h2{font-size:clamp(30px,4.4vw,68px);line-height:1.22;letter-spacing:-.05em;margin:0}
+.contact .sub{color:#5b5730;max-width:36ch;text-align:center}
+.contact .pill{margin-top:38px}
+.contact small{display:block;margin-top:20px;font-size:.8rem;color:#5F5B33}
+
+/* ══ 푸터 ═════════════════════════════════════════════════ */
+footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(34px,4vh,46px)}
+.foot-top{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:clamp(40px,6vh,64px)}
+.foot-logo{width:clamp(126px,10vw,160px);height:auto;opacity:.55}
+.totop{display:inline-flex;align-items:center;min-height:44px;padding:0 2px;
+  margin-left:auto;font-size:.9rem;color:var(--body)}
+.totop:hover{opacity:.6}
+.foot-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+
+/* ══ 모션 ═════════════════════════════════════════════════ */
+/* 마스크는 line-height 가 아니라 글자 상자를 기준으로 잡아야 합니다.
+   Pretendard·Panchang 은 글자 상자가 line-height(1.14~1.24)보다 커서,
+   여유 없이 자르면 제목 위아래가 잘립니다. 상하로 .3em 씩 열어두고
+   같은 값의 음수 마진으로 줄 간격은 그대로 유지합니다. */
+.split .w{
+  display:inline-block;overflow:hidden;vertical-align:top;
+  padding:.3em .08em;margin:-.3em -.08em;
+}
+.split .w>i{
+  display:inline-block;font-style:inherit;transform:translateY(150%);
+  transition:transform 1s cubic-bezier(.16,1,.3,1);transition-delay:var(--wd,0ms);
+}
+.split.lit .w>i{transform:translateY(0)}
+
+[data-lines] .ln{display:block;opacity:0;transform:translateY(14px);
+  transition:opacity .9s ease,transform .9s cubic-bezier(.16,1,.3,1);transition-delay:var(--ld,0ms)}
+[data-lines].lit .ln{opacity:1;transform:none}
+
+.rise{opacity:0;transform:translateY(34px);
+  transition:opacity .9s ease,transform 1s cubic-bezier(.16,1,.3,1);transition-delay:var(--sd,0ms)}
+.rise.lit{opacity:1;transform:none}
+
+/* 세로가 낮은 노트북에서는 고정 구간 내용이 100vh를 넘겨 잘립니다.
+   여백·간격·카드 높이를 함께 줄여 한 화면에 들어오게 합니다. */
+@media(min-width:701px) and (max-height:860px){
+  .hpin-stage{padding:clamp(60px,8vh,96px) 0 clamp(26px,4vh,48px);gap:clamp(16px,2.4vh,32px)}
+  .hpin-head h2{font-size:clamp(26px,3.1vw,44px)}
+  .hpin-head .sub{margin-top:14px}
+  .chan{min-height:clamp(250px,36vh,390px)}
+  .chan-note{margin-top:12px}
+}
+
+/* ══ 반응형 ═══════════════════════════════════════════════ */
+@media(max-width:1100px){
+  #siteheader nav{display:none}
+  .hero-inner{grid-template-columns:1fr;gap:36px}
+  .hero-shot img{height:clamp(300px,44vh,440px)}
+  .statement-body{grid-template-columns:1fr;gap:36px}
+  .masked{max-width:250px}
+  .approach{grid-template-columns:1fr;gap:46px}
+  .approach-head{position:static}
+  .timeline{grid-template-columns:repeat(2,1fr);row-gap:48px}
+  .faq{grid-template-columns:1fr;gap:46px}
+  .faq-head{position:static}
+}
+
+@media(max-width:700px){
+  html{scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))}
+  /* 좁은 화면에서는 섹션 사이 여백을 줄여 빈 화면이 생기지 않게 합니다 */
+  :root{--secY:clamp(58px,8vh,88px)}
+  .head-inner{height:64px;gap:8px}
+  #siteheader.solid .head-inner{height:58px}
+  .brandmark img{width:104px}
+  /* 헤더 버튼 두 개가 로고와 한 줄에 들어가야 합니다 */
+  .ghost{padding:10px 13px;font-size:.75rem;min-height:44px}
+  .pill{padding:11px 16px;font-size:.78rem;min-height:44px}
+}
+@media(max-width:700px){
+  .pill.lg{padding:15px 24px;font-size:.85rem;min-height:46px}
+  .hero-inner{min-height:0;padding-top:20px}
+  .hero-cta{gap:14px;margin-top:28px}
+  .hero-shot img{height:clamp(280px,38vh,360px)}
+  .sub{margin-top:16px}
+  .hero{margin-top:-64px;padding-top:64px}
+  .hero-mark{right:-42%;top:0;width:150vw}
+  .hero h1{font-size:clamp(38px,10.5vw,56px)}
+  .statement h2{font-size:clamp(27px,7.8vw,38px)}
+  .timeline{grid-template-columns:1fr;row-gap:38px}
+  .faq-list summary{gap:14px}
+  .foot-top{margin-bottom:34px}
+  .totop{margin-left:0;width:100%}
+  /* 모바일에서는 가로 핀을 풀고 스와이프로 넘깁니다 */
+  .hpin{height:auto}
+  .hpin-stage{position:static;height:auto;padding:clamp(64px,9vh,96px) 0 34px}
+  .hpin-track{
+    transform:none!important;overflow-x:auto;scroll-snap-type:x mandatory;
+    padding-bottom:18px;-webkit-overflow-scrolling:touch;
+  }
+  .chan{flex:0 0 78vw;scroll-snap-align:center;min-height:330px}
+}
+
+@media(max-width:380px){
+  .head-inner{gap:6px}
+  .brandmark img{width:86px}
+  .ghost{padding:9px 11px;font-size:.7rem;min-height:44px}
+  .pill{padding:10px 13px;font-size:.72rem;min-height:44px}
+@media(max-width:340px){
+  .head-inner{gap:4px}
+  .brandmark img{width:78px}
+  .ghost{padding:9px 8px;min-height:44px}
+  .pill{padding:10px 10px;min-height:44px}
+}
+}
+
+/* ══ 모션 최소화 ══════════════════════════════════════════ */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .split .w>i{transform:none}
+  [data-lines] .ln,.rise{opacity:1;transform:none}
+  .hpin{height:auto}
+  .hpin-stage{position:static;height:auto}
+  .hpin-track{transform:none!important;overflow-x:auto}
+  .chan{flex:0 0 min(420px,82vw)}
+}
