@@ -21,15 +21,19 @@
 
   /* ── 화면에 들어오면 클래스 붙이기 ───────────────────── */
   function onView(el, cb, opts) {
-    if (!('IntersectionObserver' in window)) { cb(el); return; }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        cb(e.target);
-        io.unobserve(e.target);
-      });
-    }, opts || { threshold: 0.18, rootMargin: '0px 0px -6%' });
-    io.observe(el);
+    if (typeof IntersectionObserver !== 'function') { cb(el); return; }
+    try {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          cb(e.target);
+          io.unobserve(e.target);
+        });
+      }, opts || { threshold: 0.18, rootMargin: '0px 0px -6%' });
+      io.observe(el);
+    } catch (err) {
+      cb(el);   // 관찰이 불가능하면 숨기지 않습니다
+    }
   }
 
   /* ── 제목: 단어 단위로 마스크 아래에서 올라옵니다 ─────── */
@@ -57,7 +61,35 @@
     });
     onView(root, function (t) { t.classList.add('lit'); });
   }
-  if (!reduce) $$('[data-split]').forEach(function (h) { splitWords(h, h.tagName === 'H1' ? 88 : 68); });
+  var pendingSplits = [];
+  if (!reduce) $$('[data-split]').forEach(function (h) {
+    splitWords(h, h.tagName === 'H1' ? 88 : 68);
+    pendingSplits.push(h);
+  });
+
+  /* IntersectionObserver 가 어떤 이유로든(스티키·overflow·리플로우) 놓치면
+     단어가 마스크 안에 갇혀 영영 안 보입니다. 화면에 들어온 제목은
+     스크롤 루프에서 한 번 더 확인해 반드시 드러나게 합니다. */
+  function sweepSplits() {
+    for (var i = pendingSplits.length - 1; i >= 0; i--) {
+      var el = pendingSplits[i];
+      if (el.classList.contains('lit')) { pendingSplits.splice(i, 1); continue; }
+      var r = el.getBoundingClientRect();
+      if (r.top < innerHeight * 0.95 && r.bottom > -60) {
+        el.classList.add('lit');
+        pendingSplits.splice(i, 1);
+      }
+    }
+  }
+  // 아래 코드가 어디서 멈추더라도 제목만은 반드시 드러나도록,
+  // 전용 리스너를 지금 바로 걸어둡니다.
+  if (!reduce) {
+    addEventListener('scroll', sweepSplits, { passive: true });
+    addEventListener('resize', sweepSplits);
+    sweepSplits();
+    setTimeout(sweepSplits, 400);
+    setTimeout(sweepSplits, 1600);
+  }
 
   /* ── 본문: <br> 기준으로 줄이 차례로 떠오릅니다 ───────── */
   if (!reduce) $$('[data-lines]').forEach(function (p) {
@@ -214,6 +246,7 @@
     lastY = y;
 
     if (header) header.classList.toggle('solid', y > 40);
+    if (!reduce) sweepSplits();
 
     if (!reduce) {
       // 히어로 심볼이 스크롤을 따라 천천히 돕니다
