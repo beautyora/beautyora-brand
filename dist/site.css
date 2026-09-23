@@ -264,7 +264,7 @@ body::after{
   display:grid;place-items:center;width:clamp(52px,4.6vw,66px);aspect-ratio:1;
   border-radius:20px;background:var(--yellow);margin-bottom:clamp(22px,2.4vw,32px);
 }
-.glyph svg{width:46%;height:46%;fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.glyph svg{width:54%;height:54%}
 .value h3{font-size:clamp(20px,1.6vw,26px);letter-spacing:-.04em;margin:0 0 12px}
 .value p:last-child{font-size:.95rem;line-height:1.9;color:var(--muted)}
 
@@ -284,14 +284,13 @@ body::after{
 .pain-grid li{
   position:relative;background:var(--paper);border-radius:20px;
   padding:clamp(24px,2.4vw,36px) clamp(24px,2.4vw,36px) clamp(24px,2.4vw,36px) clamp(64px,5.4vw,84px);
-  counter-increment:pain;transition:background .4s;
+  transition:background .4s;
 }
-.pain-grid{counter-reset:pain}
-.pain-grid li::before{
-  content:counter(pain);position:absolute;left:clamp(24px,2.4vw,36px);top:clamp(24px,2.4vw,36px);
-  display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
-  background:var(--yellow);font-family:var(--display);font-size:.75rem;color:var(--ink);
+.pain-grid .mini{
+  position:absolute;left:clamp(24px,2.4vw,36px);top:clamp(22px,2.2vw,34px);
+  display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--yellow);
 }
+.pain-grid .mini .ms{width:18px;height:18px}
 .pain-grid li:hover{background:var(--yellow-lt)}
 .pain-grid h4{margin:0 0 8px;font-size:clamp(17px,1.3vw,20px);letter-spacing:-.03em}
 .pain-grid p{font-size:.92rem;line-height:1.85;color:var(--muted)}
@@ -349,16 +348,16 @@ body::after{
 .tile>p{font-size:.93rem;line-height:1.85;color:var(--muted);max-width:28em}
 .tile-tour{background:var(--yellow)}
 .tile-tour::before{background:radial-gradient(420px circle at var(--mx) var(--my),#ffffff99,transparent 62%)}
-.tile-tour .tour-steps{display:grid;gap:10px;margin-top:clamp(20px,3vh,32px);counter-reset:tour}
+.tile-tour .tour-steps{display:grid;gap:10px;margin-top:clamp(20px,3vh,32px)}
 .tour-steps li{
-  counter-increment:tour;display:grid;grid-template-columns:34px 1fr;column-gap:14px;
+  display:grid;grid-template-columns:34px 1fr;column-gap:14px;
   padding:16px 18px;border-radius:18px;background:#ffffffb3;
   transition:background .35s,transform .45s cubic-bezier(.16,1,.3,1);
 }
-.tour-steps li::before{
-  content:counter(tour);grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
-  background:var(--white);font-family:var(--display);font-size:.8rem;
+.tour-steps .step-ico{
+  grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--white);
 }
+.tour-steps .step-ico .ms{width:19px;height:19px}
 .tour-steps li:hover{background:var(--white);transform:translateX(4px)}
 .tour-steps b{font-size:.98rem;letter-spacing:-.02em}
 .tour-steps span{font-size:.86rem;line-height:1.75;color:#5b5730}
@@ -636,6 +635,27 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .hpin-track{transform:none!important;overflow-x:auto}
   .chan{flex:0 0 min(420px,82vw)}
 }
+
+/* ══ 아이콘 — Google Material Symbols (Rounded · 300) ══════
+   아이콘 폰트 대신 SVG 경로를 페이지에 직접 넣어, 글꼴이 늦게 와도
+   아이콘 이름 글자가 잠깐 보이는 일이 없습니다. 색은 글자색을 따릅니다. */
+.ms{display:block;width:1em;height:1em;fill:currentColor;flex:none}
+.chan-ico,.tile-ico{
+  display:grid;place-items:center;width:44px;height:44px;border-radius:14px;
+  background:var(--yellow);color:var(--ink);margin-bottom:18px;
+}
+.chan-ico .ms,.tile-ico .ms{width:24px;height:24px}
+.chan-key .chan-ico{background:var(--white)}
+.tile-tour .tile-ico{background:var(--white)}
+.stack-ico{
+  position:absolute;top:clamp(22px,2.4vw,34px);right:clamp(22px,2.4vw,34px);
+  display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#ffffffb3;color:var(--ink);
+}
+.stack .card-a .stack-ico{background:var(--yellow-lt)}
+.stack-ico .ms{width:24px;height:24px}
+.way-label .ms{width:18px;height:18px;color:var(--ink)}
+.way-actions .pill{gap:8px}
+.way-actions .pill .ms{width:18px;height:18px}
 
 /* 등장 모션(.rise.lit)이 호버 들림을 덮지 않도록 한 번 더 적어둡니다 */
 .value.rise.lit:hover{transform:translateY(-6px)}

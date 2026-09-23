@@ -185,15 +185,16 @@
   var copyBtn = $('#copy-mail');
   if (copyBtn) copyBtn.addEventListener('click', function () {
     var text = copyBtn.getAttribute('data-copy');
+    var label = copyBtn.querySelector('span') || copyBtn;   // 아이콘은 두고 글자만 바꿉니다
     var done = function () {
-      copyBtn.textContent = '복사했습니다';
-      setTimeout(function () { copyBtn.textContent = '주소 복사'; }, 1800);
+      label.textContent = '복사했습니다';
+      setTimeout(function () { label.textContent = '주소 복사'; }, 1800);
     };
     var fallback = function () {
       var range = document.createRange();
       range.selectNodeContents($('#mail-addr'));
       var sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
-      copyBtn.textContent = '주소를 선택했습니다';
+      label.textContent = '주소를 선택했습니다';
     };
     try {
       navigator.clipboard.writeText(text).then(done, fallback);
