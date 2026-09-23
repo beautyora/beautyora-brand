@@ -597,7 +597,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .road li{padding-top:0}
   .bento{grid-template-columns:1fr;grid-template-areas:"tour" "inf" "live" "viral" "zone"}
   .flow{grid-template-columns:1fr 1fr;row-gap:30px}
-  .stack li{position:relative;top:auto;min-height:0;padding-top:64px}
+  .stack li{position:relative;top:auto;min-height:0}
   .ways{grid-template-columns:1fr}
   .faq-list summary{font-size:20px;line-height:1.45}
   .sub,.lead{font-size:15px}
@@ -692,6 +692,21 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .tile-tour{grid-template-columns:1fr}
   .tour-photo{order:-1;aspect-ratio:4/3;min-height:0}
   .tour-photo img{object-position:50% 60%}
+}
+
+/* ══ 경험 4단계 사진 — 글은 왼쪽, 정사각 사진은 오른쪽 ═════ */
+.stack li{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.82fr);
+  gap:clamp(16px,2vw,28px);align-items:stretch;padding:clamp(18px,2vw,26px);
+}
+.stack-text{display:flex;flex-direction:column;padding:clamp(6px,1vw,14px)}
+.stack-meta{display:flex;align-items:center;gap:10px;margin-bottom:auto;padding-bottom:22px}
+.stack-meta .stack-ico,.stack-meta .stack-en{position:static}
+.stack-photo{position:relative;margin:0;aspect-ratio:1;border-radius:18px;overflow:hidden;background:var(--yellow-lt)}
+.stack-photo img{width:100%;height:100%;object-fit:cover}
+@media(max-width:700px){
+  .stack li{grid-template-columns:1fr;padding:14px}
+  .stack-photo{order:-1;aspect-ratio:16/10}
 }
 
 /* 등장 모션(.rise.lit)이 호버 들림을 덮지 않도록 한 번 더 적어둡니다 */
