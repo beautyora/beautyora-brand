@@ -2,6 +2,11 @@
 
 랜딩페이지 흐름을 보고, 사진이 있으면 이해가 빨라지는 자리만 골랐습니다. 아이콘은 이미지 생성 대신 **Google Material Symbols**(Rounded, 굵기 300)를 페이지에 직접 넣었습니다(아래 [아이콘 목록](#아이콘-목록-google-material-symbols) 참고).
 
+## 진행 상황
+
+- 적용 완료 (2026-09-23): `ch-dutyfree`, `ch-department`, `ch-pharmacy`, `mk-tourist`, `mk-live`
+- 남은 것: `ch-roadshop`, `ch-popup`, `ch-global`, `mk-interview`, `mk-mainzone`, 우선순위 3·4
+
 ## 사용 방법
 
 1. 각 프롬프트 뒤에 **공통 스타일**을 그대로 붙여서 요청합니다.
