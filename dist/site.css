@@ -242,7 +242,7 @@ body::after{
 .manifesto .eyebrow{margin-bottom:clamp(26px,4vh,40px)}
 .manifesto-text{
   max-width:22em;font-family:var(--display);font-weight:700;
-  font-size:clamp(28px,4.2vw,68px);line-height:1.34;letter-spacing:-.05em;color:var(--ink);
+  font-size:clamp(28px,3.7vw,60px);line-height:1.36;letter-spacing:-.05em;color:var(--ink);
 }
 /* 스크립트가 없거나 모션을 줄인 경우엔 처음부터 진한 글자로 보입니다 */
 .manifesto-text .mw{color:#C9CAB9;transition:color .5s ease}
