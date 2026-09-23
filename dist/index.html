@@ -45,6 +45,12 @@
 
 <!-- 01 ─ 히어로 (유지) ─────────────────────────────────────── -->
 <section class="hero" id="top">
+  <!-- 전면 히어로: 사진 한 장이 첫 화면을 채웁니다.
+       새 히어로 이미지(콘셉트 A 무대)가 오면 src만 바꾸면 됩니다. -->
+  <div class="hero-media">
+    <img class="hero-img" id="heroimg" src="assets/hero.webp" alt="연노랑 받침대 위에 놓인 프로스트 유리 스킨케어 제품과 크림 용기" width="1536" height="1024" fetchpriority="high" decoding="async">
+  </div>
+  <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-markwrap" aria-hidden="true">
     <div class="hero-markinner">
       <svg class="hero-mark" viewBox="0 0 2156 1952" focusable="false"><use href="#ora"></use></svg>
@@ -62,10 +68,8 @@
         <li>채널 영업 대행</li><li>상품 매입 유통</li><li>국내외 채널 확장</li>
       </ul>
     </div>
-    <figure class="hero-shot">
-      <img src="assets/hero.webp" alt="프로스트 유리 스킨케어 제품과 크림 용기의 스튜디오 이미지" width="1536" height="1024">
-    </figure>
   </div>
+  <a class="hero-cue" href="#about" aria-label="다음 내용으로 내려가기"><span></span></a>
 </section>
 
 <!-- 02 ─ 포부 (스크롤에 따라 글자가 차오릅니다) ─────────────── -->

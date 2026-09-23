@@ -289,6 +289,8 @@
 
   /* ── 스크롤 루프 ─────────────────────────────────────── */
   var ticking = false;
+  var hero = $('.hero'), heroImg = $('#heroimg'), heroCopy = $('.hero-copy');
+  if (hero) requestAnimationFrame(function () { hero.classList.add('ready'); });
   var header = $('#siteheader');
   var contactMark = $('.contact-mark');
 
@@ -301,6 +303,16 @@
     paintProgress();
 
     if (!reduce) {
+      // 히어로 사진: 내려갈수록 살짝 커지고 흐려지며, 제목은 먼저 떠납니다
+      if (heroImg && y < innerHeight * 1.2) {
+        var hp = clamp(y / innerHeight, 0, 1);
+        hero.style.setProperty('--hs', (1.02 + hp * 0.1).toFixed(4));
+        hero.style.setProperty('--hb', (hp * 6).toFixed(2) + 'px');
+        if (heroCopy) {
+          heroCopy.style.transform = 'translate3d(0,' + (-hp * 60) + 'px,0)';
+          heroCopy.style.opacity = (1 - hp * 1.1).toFixed(3);
+        }
+      }
       // 히어로 심볼이 스크롤을 따라 천천히 돕니다
       if (heroMark && y < window.innerHeight * 1.6) {
         heroMark.style.transform = 'rotate(' + (y * 0.022) + 'deg) translateY(' + (y * 0.06) + 'px)';

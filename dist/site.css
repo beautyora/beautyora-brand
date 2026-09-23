@@ -125,37 +125,60 @@ body::after{
 #siteheader nav a:hover{color:var(--ink);opacity:.65}
 .header-actions{display:flex;align-items:center;gap:10px}
 
-/* ══ 01 히어로 — 연노랑이 화면을 갖는 첫 순간 ═══════════════ */
+/* ══ 01 히어로 — 사진 한 장이 첫 화면을 채웁니다 ═══════════
+   사진 위 왼쪽(모바일은 위쪽)에 옅은 흰 막을 깔아, 어떤 사진이 와도
+   제목이 읽히게 합니다. 사진은 들어올 때 천천히 줌아웃되고,
+   스크롤하면 살짝 커지며 흐려져 다음 섹션으로 넘어갑니다. */
 .hero{
-  position:relative;overflow:hidden;background:var(--yellow);
-  padding:0 var(--pad) clamp(60px,9vh,110px);
+  position:relative;overflow:hidden;background:var(--paper);
+  display:flex;flex-direction:column;justify-content:center;
+  min-height:100vh;min-height:100svh;
+  padding:0 var(--pad) clamp(70px,10vh,120px);
   margin-top:-92px;padding-top:92px;
+}
+.hero-media{position:absolute;inset:0;overflow:hidden}
+.hero-img{
+  width:100%;height:100%;object-fit:cover;object-position:64% 55%;
+  transform:scale(1.1);transform-origin:62% 50%;
+  transition:transform 2.6s cubic-bezier(.16,1,.3,1);
+  will-change:transform,filter;
+}
+.hero.ready .hero-img{transform:scale(var(--hs,1.02));filter:blur(var(--hb,0px))}
+.hero-veil{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(90deg,#FAFAF7f5 0%,#FAFAF7e0 26%,#FAFAF780 44%,#FAFAF700 62%),
+    linear-gradient(0deg,#F1EB9D40 0%,#F1EB9D00 40%);
 }
 /* 심볼을 콘텐츠 폭에 묶습니다 — 안 그러면 4K에서 혼자 멀리 떨어집니다 */
 .hero-markwrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:flex;justify-content:center}
 .hero-markinner{position:relative;width:100%;max-width:var(--maxw)}
 .hero-mark{
   position:absolute;right:-24%;top:-14%;width:116%;height:auto;
-  fill:none;stroke:var(--yellow-dp);stroke-width:5;opacity:.5;
+  fill:none;stroke:var(--yellow-dp);stroke-width:4;opacity:.45;
   will-change:transform;
 }
-.hero-inner{
-  position:relative;z-index:1;
-  display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(32px,4vw,80px);
-  align-items:center;min-height:clamp(560px,76vh,780px);
-  padding:clamp(30px,5vh,60px) 0 0;
-}
+.hero-inner{position:relative;z-index:1;padding:clamp(30px,6vh,70px) 0 0}
+.hero-copy{max-width:36em;will-change:transform,opacity}
 .hero h1{font-size:clamp(44px,6.2vw,104px);line-height:1.14;letter-spacing:-.055em;margin:0 0 28px}
-.lead{font-size:clamp(16px,1.25vw,20px);line-height:1.9;color:#5b5730;max-width:24em}
+.lead{font-size:clamp(16px,1.25vw,20px);line-height:1.9;color:#4F4C2E;max-width:24em}
 .hero-cta{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:42px}
-.hero-cta .textlink{color:#5b5730}
+.hero-cta .textlink{color:#4F4C2E}
+.hero-tags li{background:#ffffffb3;backdrop-filter:blur(6px)}
 
-.hero-shot{margin:0}
-.hero-shot img{
-  width:100%;height:clamp(340px,54vh,600px);object-fit:cover;
-  border-radius:var(--radius) var(--radius) clamp(60px,9vw,130px) var(--radius);
-  box-shadow:0 34px 80px #8d874a2e;
+/* 아래로 내려가라는 작은 신호 */
+.hero-cue{
+  position:absolute;left:50%;bottom:clamp(22px,4vh,40px);z-index:1;transform:translateX(-50%);
+  display:grid;place-items:center;width:44px;height:44px;
 }
+.hero-cue span{
+  display:block;width:24px;height:38px;border-radius:14px;border:1.5px solid #33342e66;position:relative;
+}
+.hero-cue span::after{
+  content:'';position:absolute;left:50%;top:8px;width:3px;height:7px;border-radius:2px;background:var(--ink);
+  transform:translateX(-50%);animation:cue 1.8s ease-in-out infinite;
+}
+@keyframes cue{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}80%,100%{opacity:0;transform:translate(-50%,12px)}}
 
 /* ══ 03 스테이트먼트 ══════════════════════════════════════ */
 .statement{background:var(--white);padding:var(--secY) var(--pad)}
@@ -551,8 +574,6 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
 /* ══ 반응형 ═══════════════════════════════════════════════ */
 @media(max-width:1100px){
   #siteheader nav{display:none}
-  .hero-inner{grid-template-columns:1fr;gap:36px}
-  .hero-shot img{height:clamp(300px,44vh,440px)}
   .statement-body{grid-template-columns:1fr;gap:36px}
   .masked{max-width:250px}
   .value-list{grid-template-columns:1fr}
@@ -602,12 +623,15 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .faq-list summary{font-size:20px;line-height:1.45}
   .sub,.lead{font-size:15px}
   .sub br,.lead br{display:none}
-  .hero-inner{min-height:0;padding-top:20px}
+  .hero-inner{padding-top:0}
   .hero-cta{gap:14px;margin-top:28px}
-  .hero-shot img{height:clamp(280px,38vh,360px)}
   .sub{margin-top:16px}
   .hero{margin-top:-64px;padding-top:64px}
   .hero-mark{right:-42%;top:0;width:150vw}
+  /* 모바일: 제목은 위, 사진의 주인공은 아래에 보이도록 */
+  .hero{justify-content:flex-start;padding-top:calc(64px + 7vh)}
+  .hero-img{object-position:58% 100%}
+  .hero-veil{background:linear-gradient(180deg,#FAFAF7f7 0%,#FAFAF7e6 38%,#FAFAF780 55%,#FAFAF700 72%)}
   .faq-list summary{gap:14px}
   .foot-top{margin-bottom:34px}
   .totop{margin-left:0;width:100%}
@@ -627,6 +651,8 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important;animation:none!important}
   .split .w>i{transform:none}
+  .hero-img{transform:none!important;filter:none!important}
+  .hero-cue span::after{animation:none}
   .manifesto-text .mw{color:var(--ink)}
   .stack li{position:relative;top:auto}
   [data-lines] .ln,.rise{opacity:1;transform:none}
