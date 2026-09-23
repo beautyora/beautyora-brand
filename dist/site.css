@@ -138,8 +138,8 @@ body::after{
 }
 .hero-media{position:absolute;inset:0;overflow:hidden}
 .hero-img{
-  width:100%;height:100%;object-fit:cover;object-position:64% 55%;
-  transform:scale(1.1);transform-origin:62% 50%;
+  width:100%;height:100%;object-fit:cover;object-position:60% 42%;
+  transform:scale(1.1);transform-origin:66% 55%;
   transition:transform 2.6s cubic-bezier(.16,1,.3,1);
   will-change:transform,filter;
 }
@@ -165,6 +165,21 @@ body::after{
 .hero-cta{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:42px}
 .hero-cta .textlink{color:#4F4C2E}
 .hero-tags li{background:#ffffffb3;backdrop-filter:blur(6px)}
+
+/* 가로로 긴 화면: 정사각 사진을 잘라 쓰면 위아래 제품이 잘립니다.
+   사진은 높이에 맞춰 오른쪽에 통째로 두고, 왼쪽 가장자리를 사진 벽
+   색(위·아래는 밝고 가운데는 따뜻한 회색)과 이어지게 흐립니다. */
+@media(min-width:701px) and (min-aspect-ratio:21/20){
+  .hero-media{
+    background:linear-gradient(180deg,#FAF8F6 0%,#E1DBD3 20%,#D6D1C7 40%,#DFD8CC 60%,#EAE3DB 80%,#F6EFE6 100%);
+  }
+  .hero-img{
+    position:absolute;top:0;right:0;width:auto;height:100%;aspect-ratio:1;object-fit:cover;
+    transform-origin:60% 60%;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 26%);
+            mask-image:linear-gradient(90deg,transparent 0%,#000 26%);
+  }
+}
 
 /* 아래로 내려가라는 작은 신호 */
 .hero-cue{
@@ -630,7 +645,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .hero-mark{right:-42%;top:0;width:150vw}
   /* 모바일: 제목은 위, 사진의 주인공은 아래에 보이도록 */
   .hero{justify-content:flex-start;padding-top:calc(64px + 7vh)}
-  .hero-img{object-position:58% 100%}
+  .hero-img{object-position:72% 100%}
   .hero-veil{background:linear-gradient(180deg,#FAFAF7f7 0%,#FAFAF7e6 38%,#FAFAF780 55%,#FAFAF700 72%)}
   .faq-list summary{gap:14px}
   .foot-top{margin-bottom:34px}
