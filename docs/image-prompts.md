@@ -4,8 +4,8 @@
 
 ## 진행 상황
 
-- 적용 완료 (2026-09-23): `ch-dutyfree`, `ch-department`, `ch-pharmacy`, `mk-tourist`, `mk-live`
-- 남은 것: `ch-roadshop`, `ch-popup`, `ch-global`, `mk-interview`, `mk-mainzone`, 우선순위 3·4
+- 적용 완료 (2026-09-23): 우선순위 1 입점처 6장, 우선순위 2 마케팅 4장 (모두 10장)
+- 남은 것 (선택): 우선순위 3 경험 4단계, 우선순위 4 `cost-shelf` · `og-image` · `hero-v2`
 
 ## 사용 방법
 
