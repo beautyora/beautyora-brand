@@ -100,10 +100,10 @@
   });
 
   /* ── 카드·스텝이 순서대로 올라옵니다 ─────────────────── */
-  if (!reduce) [['.approach-list', 130], ['.timeline', 110]].forEach(function (pair) {
+  if (!reduce) [['.value-list', 130], ['.pain-grid', 90], ['.road', 140], ['.bento', 90], ['.flow', 80]].forEach(function (pair) {
     var list = $(pair[0]);
     if (!list) return;
-    $$(':scope > li', list).forEach(function (li, i) {
+    $$(':scope > li, :scope > article', list).forEach(function (li, i) {
       li.classList.add('rise');
       li.style.setProperty('--sd', (i * pair[1]) + 'ms');
       onView(li, function (t) { t.classList.add('lit'); }, { threshold: 0.2 });
@@ -126,16 +126,89 @@
     });
   }
 
-  /* ── 접근 3단계: 보고 있는 카드와 카운터 ─────────────── */
-    var apItems = $$('.approach-list > li');
-  if (apItems.length && 'IntersectionObserver' in window) {
-    var apIo = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        e.target.classList.toggle('on', e.isIntersecting);
-      });
-    }, { threshold: 0.55 });
-    apItems.forEach(function (li) { apIo.observe(li); });
+  /* ── 포부: 스크롤한 만큼 글자가 진해집니다 ───────────── */
+  var mani = $('#manifesto'), maniWords = [];
+  if (mani) {
+    var words = mani.textContent.trim().split(/\s+/);
+    mani.innerHTML = words.map(function (w) { return '<span class="mw">' + w + '</span>'; }).join(' ');
+    maniWords = $$('.mw', mani);
+    if (reduce) maniWords.forEach(function (w) { w.classList.add('on'); });
   }
+  function paintManifesto() {
+    if (!mani || reduce) return;
+    var r = mani.getBoundingClientRect();
+    // 문단 윗변이 화면 80% 지점에 닿을 때 시작해 35% 지점에서 끝납니다
+    var start = innerHeight * 0.8, end = innerHeight * 0.35 - r.height;
+    var p = clamp((start - r.top) / (start - end), 0, 1);
+    var n = Math.round(p * maniWords.length);
+    for (var i = 0; i < maniWords.length; i++) maniWords[i].classList.toggle('on', i < n);
+  }
+
+  /* ── 숫자: 화면에 들어오면 0부터 올라갑니다 ─────────── */
+  $$('[data-count]').forEach(function (el) {
+    var to = +el.getAttribute('data-count');
+    if (reduce) return;
+    el.textContent = '0';
+    onView(el, function () {
+      var t0 = performance.now(), dur = 1400;
+      (function tick(now) {
+        var k = clamp((now - t0) / dur, 0, 1);
+        el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3)));
+        if (k < 1) requestAnimationFrame(tick);
+      })(t0);
+    }, { threshold: 0.6 });
+  });
+
+  /* ── 벤토 타일: 커서를 따라 빛이 움직입니다 ─────────── */
+  $$('.tile').forEach(function (t) {
+    t.addEventListener('pointermove', function (e) {
+      var r = t.getBoundingClientRect();
+      t.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      t.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* ── 메일 주소 복사 ──────────────────────────────────── */
+  var copyBtn = $('#copy-mail');
+  if (copyBtn) copyBtn.addEventListener('click', function () {
+    var text = copyBtn.getAttribute('data-copy');
+    var done = function () {
+      copyBtn.textContent = '복사했습니다';
+      setTimeout(function () { copyBtn.textContent = '주소 복사'; }, 1800);
+    };
+    var fallback = function () {
+      var range = document.createRange();
+      range.selectNodeContents($('#mail-addr'));
+      var sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      copyBtn.textContent = '주소를 선택했습니다';
+    };
+    try {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } catch (err) { fallback(); }
+  });
+
+  /* ── 진행선: 프로세스 · 성장 방향 · 읽기 진행 ────────── */
+  var flow = $('#flow'), flowItems = $$('#flow > li'), road = $('#road'), readbar = $('#readbar');
+  function progressOf(el, startAt, endAt) {
+    var r = el.getBoundingClientRect();
+    return clamp((innerHeight * startAt - r.top) / (r.height + innerHeight * (startAt - endAt)), 0, 1);
+  }
+  function paintProgress() {
+    if (readbar) {
+      var max = document.documentElement.scrollHeight - innerHeight;
+      readbar.style.transform = 'scaleX(' + (max > 0 ? scrollY / max : 0) + ')';
+    }
+    if (reduce) return;
+    if (flow) {
+      var fp = progressOf(flow, 0.85, 0.45);
+      flow.style.setProperty('--prog', fp);
+      flowItems.forEach(function (li, i) {
+        li.classList.toggle('on', fp >= i / (flowItems.length - 1) - 0.001);
+      });
+    }
+    if (road) road.style.setProperty('--road', progressOf(road, 0.85, 0.5));
+  }
+  if (reduce) flowItems.forEach(function (li) { li.classList.add('on'); });
 
   /* ── FAQ: 높이를 부드럽게 여닫고, 한 번에 하나만 ─────── */
   $$('.faq-list details').forEach(function (d) {
@@ -200,53 +273,18 @@
     pin.style.height = (stage.offsetHeight + travel) + 'px';
   }
 
-  /* ── 마퀴: 계속 흐르다가 스크롤하면 빨라집니다 ───────── */
-  var mtrack = $('#mtrack');
-  var mBase = null;
-  var mOffset = 0, mHalf = 0;
-
-  function cloneSet(nodes) {
-    return nodes.map(function (n) {
-      var c = n.cloneNode(true);
-      c.removeAttribute('alt');      // 복제본은 읽히지 않도록
-      c.setAttribute('alt', '');
-      c.setAttribute('aria-hidden', 'true');
-      return c;
-    });
-  }
-
-  // 트랙 절반이 화면폭보다 좁으면 되감을 때 빈틈이 생깁니다.
-  // 컨테이너를 덮을 때까지 세트를 늘린 뒤, 전체를 한 번 복제해
-  // 정확히 같은 두 덩어리로 만듭니다.
-  function measureMarquee() {
-    if (!mtrack) return;
-    if (!mBase) mBase = [].slice.call(mtrack.children);
-    mtrack.innerHTML = '';
-    mBase.forEach(function (n) { mtrack.appendChild(n); });
-
-    var box = mtrack.parentElement.clientWidth;
-    var guard = 0;
-    while (mtrack.scrollWidth < box && guard++ < 16) {
-      cloneSet(mBase).forEach(function (n) { mtrack.appendChild(n); });
-    }
-    cloneSet([].slice.call(mtrack.children)).forEach(function (n) { mtrack.appendChild(n); });
-
-    mHalf = mtrack.scrollWidth / 2;
-    mOffset = 0;
-  }
-
   /* ── 스크롤 루프 ─────────────────────────────────────── */
-  var lastY = window.scrollY, vel = 0, ticking = false;
+  var ticking = false;
   var header = $('#siteheader');
   var contactMark = $('.contact-mark');
 
   function frame() {
     var y = window.scrollY;
-    vel = y - lastY;
-    lastY = y;
 
     if (header) header.classList.toggle('solid', y > 40);
     if (!reduce) sweepSplits();
+    paintManifesto();
+    paintProgress();
 
     if (!reduce) {
       // 히어로 심볼이 스크롤을 따라 천천히 돕니다
@@ -276,22 +314,10 @@
     if (!ticking) { ticking = true; requestAnimationFrame(frame); }
   }, { passive: true });
 
-  function marqueeLoop() {
-    if (mtrack && mHalf > 0) {
-      mOffset -= 0.42 + Math.min(Math.abs(vel) * 0.06, 4);
-      if (mOffset <= -mHalf) mOffset += mHalf;
-      mtrack.style.transform = 'translate3d(' + mOffset + 'px,0,0)';
-      vel *= 0.9;
-    }
-    requestAnimationFrame(marqueeLoop);
-  }
-
   /* ── 초기화 ──────────────────────────────────────────── */
   function boot() {
     layoutPin();
-    measureMarquee();
     frame();
-    if (!reduce) marqueeLoop();
   }
 
   if (document.readyState === 'complete') boot();
@@ -300,6 +326,6 @@
   var rt;
   addEventListener('resize', function () {
     clearTimeout(rt);
-    rt = setTimeout(function () { layoutPin(); measureMarquee(); frame(); }, 160);
+    rt = setTimeout(function () { layoutPin(); frame(); }, 160);
   });
 })();
