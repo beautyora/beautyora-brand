@@ -1,4 +1,3 @@
-@import url('https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700,800&display=swap');
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 /* ============================================================
@@ -23,7 +22,7 @@
   --body:#55564F;         /* 본문 */
   --muted:#6B6C64;        /* 보조 — 흰색·연노랑 위 4.5:1 확보 */
 
-  --display:'Panchang','Pretendard',system-ui,sans-serif;
+  --display:'Pretendard',system-ui,-apple-system,sans-serif;   /* 제목·숫자·영문까지 전부 Pretendard */
   --sans:'Pretendard',system-ui,-apple-system,sans-serif;
 
   /* ── 폭 제한: 4K까지 콘텐츠가 벌어지지 않도록 ──────────
@@ -242,7 +241,7 @@ body::after{
 .manifesto .eyebrow{margin-bottom:clamp(26px,4vh,40px)}
 .manifesto-text{
   max-width:22em;font-family:var(--display);font-weight:700;
-  font-size:clamp(28px,3.7vw,60px);line-height:1.36;letter-spacing:-.05em;color:var(--ink);
+  font-size:clamp(28px,4.2vw,68px);line-height:1.34;letter-spacing:-.05em;color:var(--ink);
 }
 /* 스크립트가 없거나 모션을 줄인 경우엔 처음부터 진한 글자로 보입니다 */
 .manifesto-text .mw{color:#C9CAB9;transition:color .5s ease}
@@ -514,7 +513,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
 
 /* ══ 모션 ═════════════════════════════════════════════════ */
 /* 마스크는 line-height 가 아니라 글자 상자를 기준으로 잡아야 합니다.
-   Pretendard·Panchang 은 글자 상자가 line-height(1.14~1.24)보다 커서,
+   Pretendard 는 글자 상자가 line-height(1.14~1.24)보다 커서,
    여유 없이 자르면 제목 위아래가 잘립니다. 상하로 .3em 씩 열어두고
    같은 값의 음수 마진으로 줄 간격은 그대로 유지합니다. */
 .split .w{
