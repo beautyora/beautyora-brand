@@ -129,8 +129,21 @@
   /* ── 포부: 스크롤한 만큼 글자가 진해집니다 ───────────── */
   var mani = $('#manifesto'), maniWords = [];
   if (mani) {
-    var words = mani.textContent.trim().split(/\s+/);
-    mani.innerHTML = words.map(function (w) { return '<span class="mw">' + w + '</span>'; }).join(' ');
+    // 문장 덩어리(.mline)와 <br> 줄바꿈은 그대로 두고, 글자만 단어 단위로 감쌉니다
+    var walker = document.createTreeWalker(mani, NodeFilter.SHOW_TEXT, null, false);
+    var texts = [], tn;
+    while ((tn = walker.nextNode())) texts.push(tn);
+    texts.forEach(function (node) {
+      if (!node.nodeValue.trim()) return;
+      var frag = document.createDocumentFragment();
+      node.nodeValue.split(/(\s+)/).forEach(function (tok) {
+        if (!tok) return;
+        if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(' ')); return; }
+        var s = document.createElement('span'); s.className = 'mw'; s.textContent = tok;
+        frag.appendChild(s);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
     maniWords = $$('.mw', mani);
     if (reduce) maniWords.forEach(function (w) { w.classList.add('on'); });
   }
