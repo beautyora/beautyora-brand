@@ -75,6 +75,28 @@ Style: clean premium K-beauty editorial photography, soft diffused daylight, war
 
 > `og-image.webp`는 로고와 문구를 이미지 생성으로 넣지 말고, 생성한 배경 위에 실제 로고 파일을 얹어 만드는 것이 좋습니다. 생성 모델이 글자를 틀리게 그릴 수 있기 때문입니다.
 
+
+## 전면 히어로 이미지 아이디어 (2026-09-23)
+
+히어로를 사진 한 장이 화면 전체를 채우는 방식으로 바꿀 때의 후보입니다. 제목("좋은 브랜드의 다음 무대.")과 버튼이 사진 위에 올라가므로, **데스크톱은 왼쪽 40%, 모바일은 위쪽 45%를 비워 두는 구도**가 필수입니다.
+
+- 데스크톱용: 가로 3:2 (1536×1024) — 피사체는 오른쪽 3분의 1
+- 모바일용: 세로 2:3 (1024×1536) — 같은 장면, 피사체는 아래쪽 3분의 1
+- 두 장을 같은 프롬프트로 만들되 구도 문장만 바꿉니다. 공통 스타일은 위와 같습니다.
+
+| # | 콘셉트 | 프롬프트 (데스크톱 구도) |
+|---|---|---|
+| A | **무대** — 제목의 "다음 무대"를 그대로 장면으로 | A vast, quiet warm-white gallery space with a single low round pale-yellow plinth on the right third, lit from above by one soft spotlight like a stage, a small line-up of blank frosted-glass skincare bottles standing on it, long soft shadows on a pale floor, the left 40% of the frame is empty softly lit wall for a headline. |
+| B | **심볼 곡선** — 뷰티오라 심볼의 타원 리본을 건축물로 | A sculptural architectural ribbon of pale butter-yellow curving through a bright white atrium, echoing an elliptical swoosh, sunlight passing through it and casting a curved shadow, a few blank skincare products resting on the curve on the right third, the left 40% is clean bright wall and floor. |
+| C | **개점 직전의 아침** — 새 매장에 처음 놓이는 순간 | Early morning sunlight streaming into an empty bright beauty store just before opening, a central pale-yellow display island on the right third with neatly arranged blank products, dust-free air, long warm light beams across a pale stone floor, the left 40% is soft blurred shelving and light for a headline. |
+| D | **쇼윈도 너머의 발견** — 고객이 브랜드를 처음 만나는 장면 | Looking from the street through a large clean shop window at golden hour, a hand from the right edge reaching toward a blank frosted-glass bottle on a pale-yellow window display, warm reflections on the glass, the left 40% is soft out-of-focus window reflection and light. |
+
+모바일 구도로 바꿀 때는 마지막 문장을 다음으로 교체합니다.
+
+```
+Vertical composition: the subject sits in the lower third, the upper 45% of the frame is calm empty wall and light for a headline.
+```
+
 ---
 
 ## 아이콘 목록 (Google Material Symbols)
