@@ -473,3 +473,72 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
   .loader,.loader *,.receipt *,.done-actions{animation:none !important;transition:none !important}
   .receipt-mark path{stroke-dashoffset:0;fill-opacity:1}
 }
+
+/* ══ 파트너 안내(숨김 페이지) — 인터랙션 ═══════════════════════ */
+/* 목차: 지금 읽는 섹션 표시 */
+.sub-page #siteheader nav a{position:relative;padding:6px 0}
+.sub-page #siteheader nav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:var(--yellow-dp);transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.sub-page #siteheader nav a.is-active{color:var(--ink);opacity:1}
+.sub-page #siteheader nav a.is-active::after{transform:scaleX(1)}
+.sub-page .readbar{bottom:0}
+
+/* 히어로 심볼: 한 획으로 그려진 뒤 옅게 물듭니다 */
+.doc-mark path{fill:var(--yellow-lt);fill-opacity:0;stroke:var(--yellow-dp);stroke-width:4}
+.motion .doc-mark path{stroke-dasharray:1000;stroke-dashoffset:1000;animation:draw 3.2s var(--ease) .2s forwards,doc-wash 1.6s ease 2.4s forwards}
+@keyframes doc-wash{to{fill-opacity:.55}}
+.doc-mark{will-change:transform}
+
+/* 숫자 띠 */
+.doc-stats{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:clamp(26px,4vw,64px);margin-top:clamp(30px,5vh,44px)}
+.doc-stats li{display:grid;gap:4px}
+.doc-stats b{font-size:clamp(34px,3.6vw,54px);line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.doc-stats li > span{font-size:.86rem;color:var(--muted)}
+
+/* 비교표: 줄이 차례로 들어오고 뷰티오라 칸이 왼쪽부터 칠해집니다 */
+.motion .cmp tbody tr{opacity:0;transform:translateY(18px);transition:opacity .7s ease var(--rd,0ms),transform .8s var(--ease) var(--rd,0ms)}
+.motion .cmp.lit tbody tr{opacity:1;transform:none}
+.motion .cmp tbody td.us{
+  background:linear-gradient(var(--yellow-lt),var(--yellow-lt)) no-repeat 0 0 / 0% 100%,var(--paper);
+  transition:background-size .9s var(--ease) calc(var(--rd,0ms) + 350ms);
+}
+.motion .cmp.lit tbody td.us{background-size:100% 100%,auto}
+.motion .cmp thead th.us{transition:color .6s ease .9s;color:var(--muted)}
+.motion .cmp.lit thead th.us{color:#6D6634}
+
+/* 진행 절차: 세로선이 스크롤만큼 차오르고, 지난 단계가 켜집니다 */
+.timeline{position:relative;gap:0}
+.timeline::before,.timeline::after{content:'';position:absolute;left:19px;top:34px;bottom:34px;width:2px;border-radius:2px;background:var(--grey-bg)}
+.timeline::after{background:var(--yellow-dp);transform-origin:50% 0;transform:scaleY(var(--fill,1))}
+.motion .timeline::after{transform:scaleY(var(--fill,0))}
+.doc-sec.alt .timeline li,.timeline li{background:transparent;padding:16px 0;border-radius:0}
+.timeline li::before{position:relative;z-index:1;background:var(--yellow-lt);box-shadow:0 0 0 6px var(--paper)}
+.motion .timeline li::before{background:var(--white);color:var(--muted);box-shadow:0 0 0 6px var(--paper),inset 0 0 0 1.5px #33342e1f;transition:background .4s,color .4s,transform .5s var(--ease),box-shadow .4s}
+.motion .timeline li h3,.motion .timeline li p,.motion .timeline li .when{opacity:.45;transition:opacity .5s ease}
+.motion .timeline li.is-lit::before{background:var(--yellow);color:var(--ink);transform:scale(1.08);box-shadow:0 0 0 6px var(--paper)}
+.motion .timeline li.is-lit h3,.motion .timeline li.is-lit p,.motion .timeline li.is-lit .when{opacity:1}
+
+/* 포함 · 협의 목록: 체크가 차례로 그려집니다 */
+.motion .ticks li{opacity:0;transform:translateX(-8px);transition:opacity .5s ease var(--td,0ms),transform .6s var(--ease) var(--td,0ms)}
+.motion .ticks li::before{clip-path:inset(0 100% 0 0);transition:clip-path .45s var(--ease) calc(var(--td,0ms) + 150ms)}
+.motion .ticks.lit li{opacity:1;transform:none}
+.motion .ticks.lit li::before{clip-path:inset(0 0 0 0)}
+
+/* 커서를 따라 움직이는 옅은 빛 */
+.glow{position:relative;isolation:isolate}
+.glow::after{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),#F1EB9D80,transparent 62%);transition:opacity .4s ease}
+.glow:hover::after{opacity:1}
+.term,.scope > div{transition:transform .45s var(--ease),box-shadow .45s}
+.term:hover,.scope > div:hover{transform:translateY(-3px);box-shadow:0 16px 34px #33342e0d}
+
+/* CTA: 심볼이 지나가는 동안 돌고, 버튼이 커서 쪽으로 끌려옵니다 */
+.doc-cta .contact-mark{will-change:transform;transition:none}
+.doc-cta .pill{transition:transform .35s var(--ease),box-shadow .45s,background .45s}
+
+@media(max-width:700px){
+  .doc-stats{gap:22px 30px}
+  .timeline li{grid-template-columns:40px minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){
+  .doc-mark path{fill-opacity:.55}
+}
