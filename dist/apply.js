@@ -11,7 +11,7 @@
   /* ── 연결 주소 ────────────────────────────────────────────
      Apps Script를 "웹 앱"으로 배포하고 받은 주소(…/exec)를 적습니다.
      비어 있으면 미리보기 모드: 예시 질문(demo.json)으로 화면만 보여주고 제출은 막습니다. */
-  var ENDPOINT = '';
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzGE1ucvLJqnbDdF9Erb9lB6ivBOpKaD3gNMQ0uuMVoEbhl6MPnSS9EsY3PfkGnJK7v/exec';
   var DEMO_URL = '/apply/demo.json';
   var FORM_VIEW = 'https://docs.google.com/forms/d/e/1FAIpQLScFUxfaVQmYZxskN-9nhjsCRx7HdjH-aqi5wPaeU3Z9AOwdEg/viewform';
   var MAIL = 'pickora07@gmail.com';
