@@ -196,7 +196,7 @@
 .f.bad .err{display:block}
 
 /* 선택지: 알약 모양 토글 */
-.chips{display:flex;flex-wrap:wrap;gap:8px}
+.f .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:0}
 .chips label{position:relative;cursor:pointer}
 .chips input{position:absolute;opacity:0;width:1px;height:1px}
 .chips span{
@@ -283,3 +283,14 @@
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 fieldset{border:0;margin:0;padding:0;min-width:0}
+
+/* 개인정보 수집 · 이용 안내 (구글 폼 문구와 같게) */
+.privacy{margin-top:22px;padding:22px 24px;border-radius:18px;background:var(--paper);font-size:.86rem;color:var(--body);line-height:1.8}
+.privacy dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;margin:12px 0 0}
+.privacy dt{font-weight:600;color:var(--ink);white-space:nowrap}
+.privacy dd{margin:0}
+.privacy b{color:var(--ink)}
+.chips input:disabled + span{opacity:.38;cursor:not-allowed;text-decoration:line-through}
+.chips label:has(input:disabled){cursor:not-allowed}
+.f input[type=date]{min-height:54px}
+@media(max-width:700px){.privacy dl{grid-template-columns:1fr;gap:0}.privacy dd{margin-bottom:8px}}

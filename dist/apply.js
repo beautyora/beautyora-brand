@@ -8,36 +8,30 @@
 
   /* ── 구글 폼 연결 ─────────────────────────────────────────
      각 칸(name)을 구글 폼 질문 번호(entry.숫자)에 연결합니다.
-     구글 폼 ⋮ 메뉴 → "사전 입력된 링크 가져오기"로 만든 링크에서
-     entry 번호를 옮겨 적으면 됩니다.
+     번호는 구글 폼 ⋮ 메뉴 → "양식 미리 작성" → 링크 가져오기로 얻은 링크에 있습니다.
        ''   : 아직 연결 전 (하나라도 있으면 실제 제출을 막고 안내만 보입니다)
-       null : 구글 폼에 해당 질문이 없어 보내지 않음                     */
+       null : 구글 폼에 해당 질문이 없어 보내지 않음
+     구글 폼에서 질문을 새로 만들거나, 보기 글자를 바꾸거나, 필수로 바꾸면
+     이 목록과 apply/index.html 도 함께 고쳐야 합니다. (README 참고)            */
   var FORM_ID = '1FAIpQLScFUxfaVQmYZxskN-9nhjsCRx7HdjH-aqi5wPaeU3Z9AOwdEg';
   var ENTRY = {
-    company: '',
-    bizno: '',
-    name: '',
-    title: '',
-    phone: '',
-    email: '',
-    brand: '',
-    site: '',
-    category: '',
-    hero: '',
-    sku: '',
-    intro: '',
-    channels_now: '',
-    result: '',
-    demo: '',
-    channels_want: '',
-    start: '',
-    wish: '',
-    files: '',
-    mailed: '',
-    memo: '',
-    agree: '',
-    from: ''          // 유입 경로 (main · partner) — 구글 폼에 단답형 질문 추가 필요
+    company: 'entry.2064379657',   // 회사명
+    brand:   'entry.244438222',    // 브랜드명
+    launch:  'entry.698188432',    // 브랜드 런칭일자 (날짜 → _year · _month · _day 로 나눠 보냄)
+    bizno:   'entry.1974335104',   // 사업자번호
+    name:    'entry.1359515126',   // 담당자명 (직급 포함)
+    phone:   'entry.1194651912',   // 담당자 연락처
+    email:   'entry.940288966',    // 담당자 이메일
+    want1:   'entry.1933184746',   // 희망하는 채널 1순위
+    want2:   'entry.1023013737',   // 희망하는 채널 2순위
+    want3:   'entry.608838545',    // (순위 무관) 희망 채널
+    now:     'entry.824146306',    // (현재) 판매 채널
+    point:   'entry.280311297',    // 참여 희망 브랜드 상품 특장점
+    url:     'entry.1445351536',   // 참고 URL
+    agree:   'entry.1367661373',   // 개인정보 수집 · 이용 동의
+    from:    null                  // 유입 경로 — 구글 폼에 질문을 추가하면 번호를 적습니다
   };
+  var DATE_FIELDS = { launch: true };
   var FORM_VIEW = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/viewform';
   var FORM_POST = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/formResponse';
   var READY = Object.keys(ENTRY).every(function (k) { return ENTRY[k] !== ''; });
@@ -56,7 +50,7 @@
   var sendErr = $('#send-error');
   var cur = 0;
 
-  var KEY = 'beautyora-apply-v1';
+  var KEY = 'beautyora-apply-v2';
   var store = {
     get: function () { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } },
     set: function (v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* 저장 불가 환경은 무시 */ } },
@@ -125,7 +119,8 @@
   var CHECK = {
     bizno: function (v) { return digits(v).length === 10; },
     phone: function (v) { var n = digits(v).length; return n >= 9 && n <= 11; },
-    email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); },
+    date: function (v) { return /^\d{4}-\d{2}-\d{2}$/.test(v); }
   };
   function fieldOk(f) {
     if (f.hasAttribute('data-group')) {
@@ -257,6 +252,15 @@
     post.method = 'POST'; post.action = FORM_POST; post.target = name; post.hidden = true;
     Object.keys(ENTRY).forEach(function (k) {
       if (!ENTRY[k]) return;
+      if (DATE_FIELDS[k]) {
+        var ymd = (data[k] || '').split('-');
+        [['_year', ymd[0]], ['_month', ymd[1]], ['_day', ymd[2]]].forEach(function (pair) {
+          var inp = document.createElement('input');
+          inp.type = 'hidden'; inp.name = ENTRY[k] + pair[0]; inp.value = String(+pair[1] || '');
+          post.appendChild(inp);
+        });
+        return;
+      }
       var vals = Array.isArray(data[k]) ? data[k] : [data[k] || ''];
       vals.forEach(function (v) {
         var inp = document.createElement('input');
@@ -283,6 +287,35 @@
     armed = true;
     post.submit();
   }
+
+  /* ── 희망 채널: 앞 순위에서 고른 채널은 다음 순위에서 뺍니다 ──
+     "희망사항 없음"은 다른 채널과 함께 고를 수 없습니다. */
+  var NONE = '희망사항 없음';
+  function pick(name) {
+    return $$('input[name="' + name + '"]:checked', form).map(function (i) { return i.value; });
+  }
+  function syncChannels() {
+    var taken = pick('want1');
+    $$('input[name="want2"]', form).forEach(function (i) {
+      i.disabled = taken.indexOf(i.value) > -1;
+      if (i.disabled) i.checked = false;
+    });
+    taken = taken.concat(pick('want2')).filter(function (v) { return v !== NONE; });
+    var w3 = pick('want3');
+    var noneOn = w3.indexOf(NONE) > -1;
+    $$('input[name="want3"]', form).forEach(function (i) {
+      i.disabled = taken.indexOf(i.value) > -1 || (noneOn && i.value !== NONE);
+      if (i.disabled) i.checked = false;
+    });
+  }
+  form.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.name === 'want3' && t.value === NONE && t.checked) {
+      $$('input[name="want3"]', form).forEach(function (i) { if (i !== t) i.checked = false; });
+    }
+    if (/^want[123]$/.test(t.name)) { syncChannels(); store.set(collect()); }
+  });
+  syncChannels();
 
   show(0);
   // 첫 화면에서는 제목으로 초점을 옮기지 않습니다
