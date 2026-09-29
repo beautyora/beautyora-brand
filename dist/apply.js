@@ -27,6 +27,8 @@
   var nav = $('#nav'), prev = $('#prev'), next = $('#next');
   var progress = $('#progress'), bar = $('#bar');
   var sendErr = $('#send-error'), loadNote = $('#load-note');
+  var cover = $('#cover'), coverStart = $('#cover-start'), filed = $('#filed'), sending = $('#sending');
+  var seal = $('.seal'), sealInk = $('#seal-ink'), sealPct = $('#seal-pct');
   var DEMO = !ENDPOINT;
   var formUrl = FORM_VIEW;
   var steps = [], cur = 0;
@@ -43,6 +45,18 @@
     set: function (v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* 저장 불가 환경은 무시 */ } },
     clear: function () { try { localStorage.removeItem(KEY); } catch (e) { /* 무시 */ } }
   };
+
+  /* ── 문서 번호: 작성 중에는 같은 번호를 유지하고, 제출하면 새로 만듭니다 ── */
+  var NO_KEY = 'beautyora-apply-no';
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function ymd(d, sep) { return [d.getFullYear(), pad(d.getMonth() + 1), pad(d.getDate())].join(sep); }
+  var docNo = '';
+  try { docNo = localStorage.getItem(NO_KEY) || ''; } catch (e) { /* 무시 */ }
+  if (!/^BO-\d{6}-\d{4}$/.test(docNo)) {
+    var today = new Date();
+    docNo = 'BO-' + ymd(today, '').slice(2) + '-' + String(Math.floor(1000 + Math.random() * 9000));
+    try { localStorage.setItem(NO_KEY, docNo); } catch (e) { /* 무시 */ }
+  }
 
   /* ── 작은 도우미 ─────────────────────────────────────── */
   function h(tag, attrs, kids) {
@@ -67,6 +81,7 @@
   function kindOf(q) {
     var t = q.title || '';
     if (/유입\s*경로/.test(t)) return 'source';
+    if (/(접수|문서)\s*번호/.test(t)) return 'docno';
     if (q.type !== 'text') return '';
     if (/사업자/.test(t) && /번호/.test(t)) return 'bizno';
     if (/이메일|e-?mail/i.test(t)) return 'email';
@@ -96,7 +111,7 @@
     var kind = kindOf(q);
     var wide = /paragraph|radio|checkbox|scale/.test(q.type) || (q.help && q.help.length > 60);
     var f = h('div', { class: 'f' + (wide ? ' full' : ''), 'data-qid': q.id, 'data-type': q.type, 'data-kind': kind || null, 'data-required': q.required ? true : null });
-    if (kind === 'source') f.hidden = true;
+    if (kind === 'source' || kind === 'docno') f.hidden = true;
 
     var head = [q.title];
     if (q.required) head.push(h('span', { class: 'req', 'aria-hidden': 'true', text: '*' }));
@@ -159,6 +174,13 @@
     return '입력해 주세요.';
   }
 
+  function greet(i, total) {
+    if (i === 0) return '시작해 볼까요.';
+    if (i === total - 1) return '마지막으로 확인해 주세요.';
+    if (i === total - 2) return '거의 다 왔습니다.';
+    return '좋습니다. 이어서 작성해 주세요.';
+  }
+
   /* ── 단계 만들기 ──────────────────────────────────────
      구글 폼의 섹션이 그대로 단계가 됩니다. 섹션이 하나뿐이면
      질문 PER_STEP개씩 나눠 단계를 만듭니다. 개인정보 동의는 확인 단계로 옮깁니다. */
@@ -184,7 +206,7 @@
       var title = g.title || (i === 0 ? '기본 정보' : (i + 1) + '단계');
       var fs = h('fieldset', { class: 'sheet-step', 'data-title': title, hidden: true }, [
         h('legend', { class: 'sr', text: title }),
-        h('span', { class: 'step-count', text: (i + 1) + ' / ' + total }),
+        h('span', { class: 'step-count' }, [(i + 1) + ' / ' + total, h('span', { class: 'greet', text: greet(i, total) })]),
         h('h2', { text: g.title || '필요한 정보를 알려 주세요.' }),
         g.help ? h('p', { class: 'sub', text: g.help }) : h('p', { class: 'sub', text: '* 표시는 꼭 필요한 항목입니다.' }),
         h('div', { class: 'fields' }, g.items.map(renderQuestion))
@@ -206,7 +228,9 @@
       f.appendChild(h('p', { class: 'err', text: '동의해 주셔야 보낼 수 있습니다.' }));
       extra.appendChild(f);
     });
-    $('.step-count', reviewStep).textContent = total + ' / ' + total;
+    var sc = $('.step-count', reviewStep);
+    sc.textContent = total + ' / ' + total;
+    sc.appendChild(h('span', { class: 'greet', text: greet(total - 1, total) }));
     steps.push(reviewStep);
 
     progress.innerHTML = '';
@@ -292,6 +316,7 @@
   }
   function fillAuto() {
     $$('.f[data-kind="source"] input', form).forEach(function (el) { el.value = from; });
+    $$('.f[data-kind="docno"] input', form).forEach(function (el) { el.value = docNo; });
     if (brandParam) $$('.f[data-kind="brand"] input', form).forEach(function (el) { if (!el.value) el.value = brandParam; });
   }
 
@@ -379,7 +404,7 @@
         dl.appendChild(v ? h('dd', { text: v }) : h('dd', { style: 'color:var(--muted)', text: '—' }));
       });
       var btn = h('button', { type: 'button', text: '수정' });
-      btn.addEventListener('click', function () { show(i); });
+      btn.addEventListener('click', function () { go(i); });
       box.appendChild(h('section', null, [h('header', null, [h('h3', { text: step.getAttribute('data-title') }), btn]), dl]));
     });
   }
@@ -394,6 +419,8 @@
       if (k === i) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
     });
     if (bar) bar.style.width = ((i + 1) / steps.length * 100) + '%';
+    setSeal(i / steps.length);
+    renderFiled(-1);
     prev.hidden = i === 0;
     next.textContent = i === steps.length - 1 ? '제안서 보내기' : '다음';
     if (i === steps.length - 1) buildReview();
@@ -403,7 +430,74 @@
     var top = form.getBoundingClientRect().top + scrollY - 100;
     if (scrollY > top) scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
   }
-  prev.addEventListener('click', function () { if (cur > 0) show(cur - 1); });
+  prev.addEventListener('click', function () { if (cur > 0) go(cur - 1); });
+
+  /* ── 심볼 진행 표시 ───────────────────────────────────── */
+  function setSeal(p) {
+    if (!sealInk) return;
+    sealInk.style.strokeDashoffset = String(100 - Math.round(p * 100));
+    sealPct.textContent = String(Math.round(p * 100));
+    seal.classList.toggle('is-full', p >= 1);
+  }
+
+  /* ── 서류철: 작성을 마친 장이 카드 아래에 쌓입니다 ────── */
+  function renderFiled(arriving) {
+    filed.innerHTML = '';
+    for (var k = cur - 1; k >= 0; k--) {
+      (function (k) {
+        var n = cur - 1 - k;   // 가장 최근 장이 카드 바로 아래
+        var leaf = h('button', { type: 'button', class: 'leaf' + (k === arriving ? ' arrive' : ''), style: '--i:' + n, 'aria-label': (k + 1) + '단계 ' + steps[k].getAttribute('data-title') + ' 다시 보기' }, [
+          h('span', { class: 'n', text: pad(k + 1) }),
+          h('b', { text: steps[k].getAttribute('data-title') }),
+          h('span', { class: 'ok', text: '작성 완료' })
+        ]);
+        leaf.addEventListener('click', function () { go(k); });
+        filed.appendChild(leaf);
+      })(k);
+    }
+  }
+
+  /* ── 종이 넘기기 ──────────────────────────────────────
+     앞으로: 쓴 장이 기울며 아래로 내려가 서류철에 쌓이고, 다음 장이 떠오릅니다.
+     뒤로: 지금 장이 위로 걷히고, 서류철에서 그 장이 다시 올라옵니다. */
+  var moving = false;
+  function stagger(step) {
+    $$('.step-count, h2, .sub, .fields > *, .review > section, .notice', step).forEach(function (el, n) {
+      el.classList.add('stag');
+      el.style.setProperty('--d', Math.min(n, 10) * 55 + 'ms');
+    });
+  }
+  function go(i) {
+    if (i === cur || moving) return;
+    if (reduce || !booted) { show(i); return; }
+    var fwd = i > cur, from = steps[cur], to = steps[i];
+    moving = true;
+    form.style.height = form.offsetHeight + 'px';
+    form.classList.add('is-moving');
+    from.classList.add(fwd ? 'leave-down' : 'leave-up');
+    if (!fwd) $$('.leaf', filed).slice(0, cur - i).forEach(function (l) { l.classList.add('depart'); });
+    setTimeout(function () {
+      from.classList.remove('leave-down', 'leave-up');
+      var prevCur = cur;
+      show(i);
+      if (fwd) renderFiled(prevCur);
+      stagger(to);
+      to.classList.add(fwd ? 'enter' : 'enter-back');
+      // 카드 높이를 새 장에 맞춰 부드럽게
+      var old = form.style.height;
+      form.style.height = 'auto';
+      var target = form.offsetHeight;
+      form.style.height = old;
+      void form.offsetHeight;
+      form.style.height = target + 'px';
+      setTimeout(function () {
+        form.style.height = '';
+        form.classList.remove('is-moving');
+        to.classList.remove('enter', 'enter-back');
+        moving = false;
+      }, 750);
+    }, fwd ? 420 : 380);
+  }
 
   form.addEventListener('input', function (e) {
     if (e.target.matches('input[type=text],input[type=tel]')) formatField(e.target);
@@ -427,30 +521,67 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (!steps.length) return;
+    if (!steps.length || moving) return;
     if (!validate(steps[cur])) return;
-    if (cur < steps.length - 1) { show(cur + 1); return; }
+    if (cur < steps.length - 1) { go(cur + 1); return; }
     send();
   });
 
   /* ── 제출 ─────────────────────────────────────────────── */
   function fail(msg) {
+    form.classList.remove('is-sending');
+    sending.hidden = true;
     next.disabled = false;
     next.textContent = '제안서 보내기';
     sendErr.innerHTML = msg;
     sendErr.hidden = false;
     sendErr.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
   }
+  function buildReceipt() {
+    var rows = [['접수번호', docNo, 'no']];
+    var now = new Date();
+    rows.push(['접수 일시', ymd(now, '. ') + '  ' + pad(now.getHours()) + ':' + pad(now.getMinutes())]);
+    function byTitle(re) {
+      var id = Object.keys(questions).filter(function (k) { return re.test(questions[k].title || ''); })[0];
+      return id ? [].concat(valueOf(id)).join(', ') : '';
+    }
+    function byKind(kind) {
+      var f = $('.f[data-kind="' + kind + '"]', form);
+      return f ? [].concat(valueOf(f.getAttribute('data-qid'))).join(', ') : '';
+    }
+    var company = byTitle(/회사\s*명|상호/), brand = byKind('brand'), person = byTitle(/담당자\s*명|성함|이름/), mail = byKind('email');
+    if (company) rows.push(['회사명', company]);
+    if (brand) rows.push(['브랜드명', brand]);
+    if (person) rows.push(['담당자', person]);
+    if (mail) rows.push(['회신 받을 이메일', mail]);
+    var chans = ranked.map(function (r) { return [].concat(valueOf(r.id)).join(', '); }).filter(Boolean);
+    if (chans.length) rows.push(['희망 채널', chans.join('  →  ')]);
+    var dl = $('#receipt-rows');
+    dl.innerHTML = '';
+    rows.forEach(function (r) {
+      dl.appendChild(h('dt', { text: r[0] }));
+      dl.appendChild(h('dd', { class: r[2] || null, text: r[1] }));
+    });
+    $('#stamp-date').textContent = ymd(now, '.');
+  }
   function finish() {
+    buildReceipt();
     store.clear();
+    try { localStorage.removeItem(NO_KEY); } catch (e) { /* 무시 */ }
+    form.classList.remove('is-sending');
+    sending.hidden = true;
     steps.forEach(function (s) { s.hidden = true; });
     nav.hidden = true;
+    filed.innerHTML = '';
     doneStep.hidden = false;
     $$('li', progress).forEach(function (li) { li.classList.remove('is-now'); li.classList.add('is-done'); });
     if (bar) bar.style.width = '100%';
+    setSeal(1);
     doneStep.focus({ preventScroll: true });
-    scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    var top = form.getBoundingClientRect().top + scrollY - 100;
+    scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
   }
+  $('#print-receipt').addEventListener('click', function () { window.print(); });
   var KEEP = '작성하신 내용은 이 기기에 그대로 남아 있습니다.';
   function send() {
     if (DEMO) {
@@ -459,6 +590,12 @@
     }
     next.disabled = true;
     next.textContent = '보내는 중…';
+    sendErr.hidden = true;
+    form.classList.add('is-sending');
+    sending.hidden = false;
+    var topS = form.getBoundingClientRect().top + scrollY - 110;
+    if (scrollY > topS) scrollTo({ top: topS, behavior: reduce ? 'auto' : 'smooth' });
+    var sentAt = Date.now();
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 25000);
     // text/plain 으로 보내야 브라우저가 사전 확인 요청 없이 Apps Script로 바로 보냅니다
@@ -468,7 +605,7 @@
       signal: ctrl ? ctrl.signal : undefined
     }).then(function (r) { return r.json(); }).then(function (res) {
       clearTimeout(timer);
-      if (res && res.ok) { finish(); return; }
+      if (res && res.ok) { setTimeout(finish, Math.max(0, (reduce ? 0 : 1800) - (Date.now() - sentAt))); return; }
       if (res && res.error === 'closed') { fail('지금은 제안서 접수를 잠시 멈췄습니다. ' + MAIL + '으로 문의해 주세요. ' + KEEP); return; }
       if (res && res.error === 'invalid') {
         var names = (res.missing || []).concat(res.bad || []).join(', ');
@@ -485,6 +622,8 @@
   /* ── 불러오기 ─────────────────────────────────────────── */
   var booted = false;
   function loadFailed(reason) {
+    cover.hidden = true;
+    form.hidden = false;
     form.setAttribute('aria-busy', 'false');
     stepsBox.innerHTML = '';
     loadNote.innerHTML = '입력폼을 불러오지 못했습니다. 잠시 후 새로고침하시거나, ' + linkHTML('구글 폼') + '으로 제안해 주세요. 문의 ' + MAIL +
@@ -496,6 +635,8 @@
     if (data.url) formUrl = data.url;
     form.setAttribute('aria-busy', 'false');
     if (data.accepting === false) {
+      cover.hidden = true;
+      form.hidden = false;
       stepsBox.innerHTML = '';
       loadNote.textContent = data.closedMessage || ('지금은 제안서 접수를 잠시 멈췄습니다. ' + MAIL + '으로 문의해 주세요.');
       loadNote.hidden = false;
@@ -526,7 +667,39 @@
     }
     show(0);
     booted = true;
+    readyCover(data);
   }
+
+  /* ── 표지(초대장) ─────────────────────────────────────── */
+  function initCover() {
+    $('#cover-date').textContent = ymd(new Date(), '. ');
+    $('#cover-no').textContent = 'No. ' + docNo;
+    if (brandParam) $('#cover-to').textContent = brandParam + ' 담당자님께';
+  }
+  function readyCover() {
+    var n = $$('.f[data-qid]', form).filter(function (f) { return !f.hidden; }).length;
+    $('#cover-size').textContent = '질문 ' + n + '개 · 약 ' + Math.max(2, Math.round(n / 4)) + '분';
+    var raw = store.get();
+    var started = Object.keys(raw).some(function (k) { var v = raw[k]; return Array.isArray(v) ? v.length : v; });
+    coverStart.textContent = started ? '이어서 작성하기' : '작성 시작';
+    coverStart.disabled = false;
+  }
+  function openSheet() {
+    cover.hidden = true;
+    form.hidden = false;
+    stagger(steps[cur]);
+    steps[cur].classList.add('enter');
+    setTimeout(function () { steps[cur].classList.remove('enter'); }, 900);
+    var hd = $('h2', steps[cur]);
+    if (hd) { hd.setAttribute('tabindex', '-1'); hd.focus({ preventScroll: true }); }
+  }
+  coverStart.addEventListener('click', function () {
+    if (coverStart.disabled) return;
+    if (reduce) { openSheet(); return; }
+    cover.classList.add('is-lifting');
+    setTimeout(openSheet, 520);
+  });
+  initCover();
 
   /* Apps Script는 한동안 쓰지 않으면 첫 응답이 느립니다(콜드 스타트).
      넉넉히 기다리고, 실패하면 한 번 더 시도합니다. 끝내 실패하면 이유를 화면에 적습니다. */
