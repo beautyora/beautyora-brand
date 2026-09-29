@@ -177,7 +177,7 @@
 .f .req{color:#9A8B1E;margin-left:3px}
 .f .opt{font-weight:400;color:var(--muted);font-size:.8rem;margin-left:6px}
 .f .hint{font-size:.8rem;color:var(--muted);line-height:1.6}
-.f input[type=text],.f input[type=email],.f input[type=tel],.f input[type=url],.f input[type=number],.f select,.f textarea{
+.f input[type=text],.f input[type=email],.f input[type=tel],.f input[type=url],.f input[type=number],.f input[type=date],.f select,.f textarea{
   width:100%;min-height:54px;padding:14px 18px;border-radius:14px;
   border:1.5px solid #33342e1f;background:var(--white);color:var(--ink);
   font:inherit;font-size:1rem;transition:border-color .25s,box-shadow .25s;
@@ -294,3 +294,29 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .chips label:has(input:disabled){cursor:not-allowed}
 .f input[type=date]{min-height:54px}
 @media(max-width:700px){.privacy dl{grid-template-columns:1fr;gap:0}.privacy dd{margin-bottom:8px}}
+
+/* ── 구글 폼에서 읽어 오는 입력폼 ─────────────────────────── */
+.skel{display:grid;gap:14px}
+.skel i{display:block;height:18px;border-radius:10px;background:linear-gradient(90deg,var(--grey-bg) 0%,var(--paper) 50%,var(--grey-bg) 100%);background-size:200% 100%;animation:skel 1.4s ease-in-out infinite}
+.skel .s1{width:18%;height:14px}
+.skel .s2{width:62%;height:34px;margin-bottom:18px}
+.skel .s3{width:30%}
+.skel .s4{height:54px;border-radius:14px}
+@keyframes skel{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media(prefers-reduced-motion:reduce){.skel i{animation:none}}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.f .hint{white-space:pre-line}
+.q-head{grid-column:1 / -1;padding-top:10px}
+.q-head h3{font-size:1.05rem;letter-spacing:-.02em}
+.q-head p{margin-top:6px;font-size:.88rem;color:var(--muted);white-space:pre-line}
+.other-input{margin-top:6px}
+.scale{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.scale small{font-size:.8rem;color:var(--muted)}
+.form-intro{margin-top:18px;border-radius:16px;background:#ffffff99}
+.form-intro summary{cursor:pointer;list-style:none;min-height:48px;display:flex;align-items:center;padding:0 20px;font-size:.88rem;font-weight:600;color:#6D6634}
+.form-intro summary::-webkit-details-marker{display:none}
+.form-intro summary::after{content:'+';margin-left:auto;font-weight:400;font-size:1.1rem}
+.form-intro[open] summary::after{content:'−'}
+.form-intro div{padding:0 20px 18px;font-size:.84rem;line-height:1.85;color:var(--body);white-space:pre-line;max-height:52vh;overflow:auto}
+.agree-help{font-size:.84rem;color:var(--body);line-height:1.85;white-space:pre-line;padding:20px 22px;border-radius:16px;background:var(--paper)}
+@media(max-width:1100px){.form-intro{display:block}}

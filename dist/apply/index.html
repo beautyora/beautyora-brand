@@ -38,13 +38,12 @@
     <h1>입점 제안서.</h1>
     <p class="sub">보내 주신 내용을 바탕으로 브랜드와 제품 특성을 검토한 뒤, 적합한 유통 채널을 정리해 회신드립니다.</p>
 
-    <ol class="progress" id="progress" aria-label="작성 단계">
-      <li><i>1</i>회사 · 담당자</li>
-      <li><i>2</i>브랜드 · 상품</li>
-      <li><i>3</i>현재 판매 채널</li>
-      <li><i>4</i>희망 채널</li>
-      <li><i>5</i>확인 · 제출</li>
-    </ol>
+    <ol class="progress" id="progress" aria-label="작성 단계"></ol>
+
+    <details class="form-intro" id="form-intro" hidden>
+      <summary>신청 안내 자세히 보기</summary>
+      <div id="form-desc"></div>
+    </details>
 
     <div class="side-help">
       <p>작성 중인 내용은 이 기기에 임시 저장되어, 창을 닫았다 다시 열어도 이어서 쓸 수 있습니다.</p>
@@ -55,136 +54,22 @@
   <div>
     <div class="bar" aria-hidden="true"><i id="bar"></i></div>
 
-    <form class="sheet" id="apply" novalidate>
-      <input type="hidden" name="from" value="">
-      <!-- 질문은 구글 폼과 같은 순서 · 같은 보기로 맞춥니다. 구글 폼을 고치면 여기와 apply.js의 ENTRY도 함께 고쳐야 합니다. -->
+    <form class="sheet" id="apply" novalidate aria-busy="true">
+      <!-- 질문은 구글 폼에서 읽어 와 apply.js가 그립니다. 구글 폼을 고치면 여기도 자동으로 바뀝니다. -->
+      <div id="steps">
+        <div class="skel" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s3"></i><i class="s4"></i></div>
+        <p class="sr" role="status">입력폼을 불러오는 중입니다.</p>
+      </div>
+      <div class="notice" id="load-note" hidden role="alert"></div>
 
-      <!-- 1 ─ 회사 · 담당자 -->
-      <fieldset class="sheet-step" data-step="1" data-title="회사 · 담당자">
-        <legend class="sr">회사 · 담당자</legend>
-        <span class="step-count">1 / 5</span>
-        <h2>회사와 담당자 정보를 알려 주세요.</h2>
-        <p class="sub">회신 및 서류 발송은 입력하신 이메일로 드립니다.</p>
-        <div class="fields">
-          <div class="f full"><label for="f-company">회사명<span class="req" aria-hidden="true">*</span></label><input id="f-company" name="company" type="text" autocomplete="organization" placeholder="예: (주)픽오라" required><p class="hint">사업자등록증에 기재된 상호 그대로 적어 주세요. 오기입 시 검토가 늦어질 수 있습니다.</p><p class="err">회사명을 입력해 주세요.</p></div>
-          <div class="f"><label for="f-bizno">사업자번호<span class="req" aria-hidden="true">*</span></label><input id="f-bizno" name="bizno" type="text" inputmode="numeric" placeholder="123-45-67890" maxlength="12" required data-check="bizno"><p class="err">10자리 번호를 확인해 주세요.</p></div>
-          <div class="f"><label for="f-name">담당자명<span class="req" aria-hidden="true">*</span></label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="예: 김○○ 대표" required><p class="hint">직급을 함께 적어 주세요.</p><p class="err">담당자명과 직급을 입력해 주세요.</p></div>
-          <div class="f"><label for="f-phone">담당자 연락처<span class="req" aria-hidden="true">*</span></label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" required data-check="phone"><p class="err">연락 가능한 번호를 확인해 주세요.</p></div>
-          <div class="f"><label for="f-email">담당자 이메일<span class="req" aria-hidden="true">*</span></label><input id="f-email" name="email" type="email" autocomplete="email" placeholder="pickora07@gmail.com" required data-check="email"><p class="err">수신 가능한 이메일 주소를 확인해 주세요.</p></div>
-        </div>
-      </fieldset>
-
-      <!-- 2 ─ 브랜드 · 상품 -->
-      <fieldset class="sheet-step" data-step="2" data-title="브랜드 · 상품" hidden>
-        <legend class="sr">브랜드 · 상품</legend>
-        <span class="step-count">2 / 5</span>
-        <h2>브랜드와 상품을 소개해 주세요.</h2>
-        <p class="sub">대표 상품 위주로 적어 주셔도 충분합니다.</p>
-        <div class="fields">
-          <div class="f"><label for="f-brand">브랜드명<span class="req" aria-hidden="true">*</span></label><input id="f-brand" name="brand" type="text" required><p class="err">브랜드명을 입력해 주세요.</p></div>
-          <div class="f"><label for="f-launch">브랜드 런칭일자<span class="req" aria-hidden="true">*</span></label><input id="f-launch" name="launch" type="date" required data-check="date"><p class="err">날짜를 골라 주세요.</p></div>
-          <div class="f full"><label for="f-point">참여 희망 브랜드 상품 특장점<span class="req" aria-hidden="true">*</span></label><textarea id="f-point" name="point" required placeholder="상품의 강점, 주요 타깃, 차별점을 간략하게 적어 주세요."></textarea><p class="err">간략하게라도 적어 주세요.</p></div>
-          <div class="f full"><label for="f-url">참고 URL<span class="req" aria-hidden="true">*</span></label><input id="f-url" name="url" type="url" inputmode="url" placeholder="https://" required><p class="hint">자사몰 또는 외부 판매몰 주소</p><p class="err">참고할 주소를 입력해 주세요.</p></div>
-        </div>
-      </fieldset>
-
-      <!-- 3 ─ 현재 판매 채널 -->
-      <fieldset class="sheet-step" data-step="3" data-title="현재 판매 채널" hidden>
-        <legend class="sr">현재 판매 채널</legend>
-        <span class="step-count">3 / 5</span>
-        <h2>지금 어디에서 판매하고 계신가요?</h2>
-        <p class="sub">기존 채널은 채널 매칭에 가장 중요한 자료입니다.</p>
-        <div class="fields">
-          <div class="f full" data-group="now" data-required>
-            <span class="lbl" id="l-now">현재 판매 채널<span class="req" aria-hidden="true">*</span><span class="opt">해당하는 것 모두</span></span>
-            <div class="chips" role="group" aria-labelledby="l-now">
-              <label><input type="checkbox" name="now" value="자사몰"><span>자사몰</span></label>
-              <label><input type="checkbox" name="now" value="네이버 스마트스토어"><span>네이버 스마트스토어</span></label>
-              <label><input type="checkbox" name="now" value="쿠팡"><span>쿠팡</span></label>
-              <label><input type="checkbox" name="now" value="백화점/면세점"><span>백화점/면세점</span></label>
-              <label><input type="checkbox" name="now" value="피부과 / 에스테틱 / 전문샵"><span>피부과 / 에스테틱 / 전문샵</span></label>
-              <label><input type="checkbox" name="now" value="해외 수출 or 입점"><span>해외 수출 or 입점</span></label>
-            </div>
-            <p class="err">하나 이상 골라 주세요.</p>
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- 4 ─ 희망 채널 -->
-      <fieldset class="sheet-step" data-step="4" data-title="희망 채널" hidden>
-        <legend class="sr">희망 채널</legend>
-        <span class="step-count">4 / 5</span>
-        <h2>어떤 채널을 희망하시나요?</h2>
-        <p class="sub">앞에서 고른 채널은 다음 순위에서 자동으로 빠집니다.</p>
-        <div class="fields">
-          <div class="f full" data-group="want1" data-required>
-            <span class="lbl" id="l-w1">희망하는 채널 1순위<span class="req" aria-hidden="true">*</span></span>
-            <div class="chips" role="radiogroup" aria-labelledby="l-w1">
-              <label><input type="radio" name="want1" value="오프라인 큐레이션 편집샵"><span>오프라인 큐레이션 편집샵</span></label>
-              <label><input type="radio" name="want1" value="약국"><span>약국</span></label>
-              <label><input type="radio" name="want1" value="백화점"><span>백화점</span></label>
-              <label><input type="radio" name="want1" value="면세점"><span>면세점</span></label>
-              <label><input type="radio" name="want1" value="팝업스토어"><span>팝업스토어</span></label>
-            </div>
-            <p class="err">하나를 골라 주세요.</p>
-          </div>
-          <div class="f full" data-group="want2" data-required>
-            <span class="lbl" id="l-w2">희망하는 채널 2순위<span class="req" aria-hidden="true">*</span></span>
-            <div class="chips" role="radiogroup" aria-labelledby="l-w2">
-              <label><input type="radio" name="want2" value="오프라인 큐레이션 편집샵"><span>오프라인 큐레이션 편집샵</span></label>
-              <label><input type="radio" name="want2" value="약국"><span>약국</span></label>
-              <label><input type="radio" name="want2" value="백화점"><span>백화점</span></label>
-              <label><input type="radio" name="want2" value="면세점"><span>면세점</span></label>
-              <label><input type="radio" name="want2" value="팝업스토어"><span>팝업스토어</span></label>
-              <label><input type="radio" name="want2" value="해외수출"><span>해외수출</span></label>
-              <label><input type="radio" name="want2" value="라이브커머스"><span>라이브커머스</span></label>
-              <label><input type="radio" name="want2" value="공동구매"><span>공동구매</span></label>
-              <label><input type="radio" name="want2" value="B2C 온라인몰"><span>B2C 온라인몰</span></label>
-              <label><input type="radio" name="want2" value="희망사항 없음"><span>희망사항 없음</span></label>
-            </div>
-            <p class="err">하나를 골라 주세요.</p>
-          </div>
-          <div class="f full" data-group="want3" data-required>
-            <span class="lbl" id="l-w3">그 밖의 희망 채널<span class="req" aria-hidden="true">*</span><span class="opt">순위 무관 · 여러 개 선택</span></span>
-            <div class="chips" role="group" aria-labelledby="l-w3">
-              <label><input type="checkbox" name="want3" value="오프라인 큐레이션 편집샵"><span>오프라인 큐레이션 편집샵</span></label>
-              <label><input type="checkbox" name="want3" value="약국"><span>약국</span></label>
-              <label><input type="checkbox" name="want3" value="백화점"><span>백화점</span></label>
-              <label><input type="checkbox" name="want3" value="면세점"><span>면세점</span></label>
-              <label><input type="checkbox" name="want3" value="팝업스토어"><span>팝업스토어</span></label>
-              <label><input type="checkbox" name="want3" value="해외수출"><span>해외수출</span></label>
-              <label><input type="checkbox" name="want3" value="라이브커머스"><span>라이브커머스</span></label>
-              <label><input type="checkbox" name="want3" value="공동구매"><span>공동구매</span></label>
-              <label><input type="checkbox" name="want3" value="B2C 온라인몰"><span>B2C 온라인몰</span></label>
-              <label><input type="checkbox" name="want3" value="희망사항 없음"><span>희망사항 없음</span></label>
-            </div>
-            <p class="err">하나 이상 골라 주세요. 없으면 "희망사항 없음"을 골라 주세요.</p>
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- 5 ─ 확인 · 제출 -->
-      <fieldset class="sheet-step" data-step="5" data-title="확인 · 제출" hidden>
+      <!-- 확인 · 제출 (항상 마지막) -->
+      <fieldset class="sheet-step" data-step="review" data-title="확인 · 제출" hidden>
         <legend class="sr">확인 · 제출</legend>
-        <span class="step-count">5 / 5</span>
+        <span class="step-count"></span>
         <h2>보내기 전에 확인해 주세요.</h2>
         <p class="sub">고칠 부분이 있으면 각 항목의 수정을 누르세요.</p>
         <div class="review" id="review"></div>
-        <div class="privacy">
-          <p>입점 검토를 위해 아래와 같이 개인정보를 수집 · 이용합니다.</p>
-          <dl>
-            <dt>수집 항목</dt><dd>이름, 연락처(전화번호 · 이메일), 기타 설문 응답 내용</dd>
-            <dt>수집 목적</dt><dd>설문 결과 확인 및 필요 시 추가 문의를 위한 연락, 통계 분석 및 서비스 개선을 위한 기초 자료 활용</dd>
-            <dt>보유 · 이용 기간</dt><dd><b>수집일로부터 1년간 보관 후 지체 없이 파기</b></dd>
-            <dt>동의 거부 권리</dt><dd>동의를 거부할 수 있습니다. 다만 동의하지 않으면 제출할 수 없습니다.</dd>
-          </dl>
-        </div>
-        <div class="fields" style="margin-top:12px">
-          <div class="f full" data-group="agree" data-required>
-            <label class="agree"><input type="checkbox" name="agree" value="위 내용을 모두 확인하였으며, 개인정보 수집·이용에 동의합니다."><span><b>위 내용을 모두 확인하였으며, 개인정보 수집·이용에 동의합니다.</b></span></label>
-            <p class="err">동의해 주셔야 보낼 수 있습니다.</p>
-          </div>
-        </div>
+        <div class="fields" id="review-extra"></div>
         <div class="notice err" id="send-error" hidden role="alert"></div>
       </fieldset>
 
@@ -201,7 +86,10 @@
         <a class="pill" href="/">뷰티오라 홈으로</a>
       </div>
 
-      <div class="sheet-nav" id="nav">
+      <!-- 사람에게는 보이지 않는 칸: 자동 입력 봇 거르기 -->
+      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="sheet-nav" id="nav" hidden>
         <button class="ghost" type="button" id="prev" hidden>이전</button>
         <button class="pill lg" type="submit" id="next">다음</button>
       </div>
