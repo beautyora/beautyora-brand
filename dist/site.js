@@ -353,3 +353,10 @@
     rt = setTimeout(function () { layoutPin(); frame(); }, 160);
   });
 })();
+
+/* 예전 호스팅이 남긴 서비스 워커 정리 — 이 사이트는 서비스 워커를 쓰지 않습니다 */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (rs) {
+    rs.forEach(function (r) { r.unregister(); });
+  }).catch(function () {});
+}
