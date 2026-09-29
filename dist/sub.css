@@ -320,3 +320,156 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .form-intro div{padding:0 20px 18px;font-size:.84rem;line-height:1.85;color:var(--body);white-space:pre-line;max-height:52vh;overflow:auto}
 .agree-help{font-size:.84rem;color:var(--body);line-height:1.85;white-space:pre-line;padding:20px 22px;border-radius:16px;background:var(--paper)}
 @media(max-width:1100px){.form-intro{display:block}}
+
+/* ══ 입점 제안서 — "한 부의 서류를 완성해 가는" 연출 ═══════════ */
+:root{--ease:cubic-bezier(.16,1,.3,1)}
+
+/* 종이 넘기기: 쓴 장은 기울며 아래로 내려가 서류철에 쌓이고, 다음 장이 떠오릅니다 */
+.sheet{position:relative;z-index:2;transition:height .55s var(--ease)}
+.sheet.is-moving{overflow:hidden}
+.sheet-step.leave-down{animation:leave-down .42s cubic-bezier(.55,0,.8,.2) forwards}
+.sheet-step.leave-up{animation:leave-up .38s ease forwards}
+@keyframes leave-down{to{opacity:0;transform:translateY(90px) rotate(1.4deg) scale(.95)}}
+@keyframes leave-up{to{opacity:0;transform:translateY(-40px)}}
+.sheet-step.enter .stag{animation:rise .7s var(--ease) both;animation-delay:var(--d,0ms)}
+.sheet-step.enter-back .stag{animation:drop-in .6s var(--ease) both;animation-delay:var(--d,0ms)}
+@keyframes drop-in{from{opacity:0;transform:translateY(-22px)}to{opacity:1;transform:none}}
+
+.filed{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;margin-top:-22px}
+.leaf{
+  display:flex;align-items:center;gap:12px;width:calc(100% - var(--i) * 14px);min-height:62px;
+  margin-top:-14px;padding:30px 26px 12px;border-radius:0 0 22px 22px;
+  background:var(--white);box-shadow:0 12px 26px #33342e0f;border:0;font:inherit;text-align:left;cursor:pointer;
+  color:var(--body);font-size:.88rem;transition:transform .35s var(--ease),background .3s;
+}
+.leaf:first-child{margin-top:0}
+.leaf:nth-child(even){background:#fcfcfa}
+.leaf:hover{transform:translateY(3px);background:var(--yellow-lt)}
+.leaf .n{font-weight:700;color:#8A8246;font-variant-numeric:tabular-nums}
+.leaf b{font-weight:600;color:var(--ink)}
+.leaf .ok{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.leaf .ok::before{content:'';width:9px;height:5px;border:solid #8A8246;border-width:0 0 2px 2px;transform:translateY(-2px) rotate(-45deg)}
+.leaf.arrive{animation:file-in .6s var(--ease) both .18s}
+@keyframes file-in{from{opacity:0;transform:translateY(-70px) scale(1.04) rotate(-1deg)}to{opacity:1;transform:none}}
+.leaf.depart{animation:file-out .35s ease forwards}
+@keyframes file-out{to{opacity:0;transform:translateY(-40px)}}
+
+/* 단계마다 붙는 한 줄 인사 */
+.step-count .greet{font-weight:500;color:var(--muted);margin-left:8px}
+
+/* 입력칸: 누르면 연노랑 선이 가운데서 그어집니다 */
+.f input[type=text],.f input[type=email],.f input[type=tel],.f input[type=url],.f textarea{
+  background-image:linear-gradient(var(--yellow-dp),var(--yellow-dp));background-repeat:no-repeat;
+  background-position:50% 100%;background-size:0% 2px;
+  transition:border-color .25s,box-shadow .25s,background-size .5s var(--ease);
+}
+.f input[type=text]:focus,.f input[type=email]:focus,.f input[type=tel]:focus,.f input[type=url]:focus,.f textarea:focus{background-size:100% 2px}
+
+/* 선택지: 살짝 눌리고, 체크는 획으로 그려집니다 */
+.chips label:active span{transform:scale(.96)}
+.chips span{transition:background .25s,border-color .25s,color .25s,transform .2s var(--ease)}
+.f .chips input[type=checkbox]:checked + span::before{
+  content:'';flex:none;width:9px;height:5px;border:solid #6D6634;border-width:0 0 2px 2px;
+  transform:translateY(-2px) rotate(-45deg);animation:tick .35s var(--ease) both;
+}
+.f .chips input[type=radio]:checked + span::before{
+  content:'';flex:none;width:7px;height:7px;border-radius:50%;background:#8A8246;animation:dot .35s var(--ease) both;
+}
+@keyframes tick{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes dot{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* 보내는 중: 서류가 봉투에 담깁니다 */
+.sending{display:grid;justify-items:center;gap:18px;padding:clamp(60px,10vh,110px) 0}
+.sending p{font-size:.95rem;color:var(--body)}
+.sending p::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.envelope{width:140px;height:auto;overflow:visible}
+.env-body{fill:var(--yellow-lt)}
+.env-paper{fill:var(--white);stroke:#33342e1f;stroke-width:1.2;animation:tuck 1s var(--ease) both .1s}
+.env-front{fill:var(--yellow)}
+.env-flap{fill:var(--yellow-dp);transform-origin:60px 22px;transform:scaleY(-1);animation:seal-flap .6s var(--ease) forwards 1s}
+@keyframes tuck{from{transform:translateY(-46px)}to{transform:translateY(12px)}}
+@keyframes seal-flap{to{transform:scaleY(1)}}
+.sheet.is-sending .sheet-step,.sheet.is-sending .sheet-nav{display:none}
+
+/* 접수증 */
+.done{padding:0;text-align:left}
+.receipt{position:relative;overflow:hidden;padding:clamp(8px,1vw,14px) 0 0;animation:unfold .8s var(--ease) both}
+@keyframes unfold{from{opacity:0;transform:translateY(26px) scale(.98)}to{opacity:1;transform:none}}
+.receipt header{display:flex;align-items:center;gap:18px;padding-bottom:26px;box-shadow:inset 0 -1px 0 #33342e14}
+.receipt-mark{width:58px;height:auto;fill:var(--yellow)}
+.receipt header p{font-size:.84rem;font-weight:600;color:#8A8246}
+.receipt header h2{font-size:clamp(28px,3vw,42px);letter-spacing:-.05em;line-height:1.15;margin-top:2px}
+.receipt dl{display:grid;grid-template-columns:minmax(0,.36fr) minmax(0,1fr);margin:0;padding:10px 0}
+.receipt dt,.receipt dd{padding:14px 0;box-shadow:inset 0 -1px 0 #33342e0d;font-size:.95rem}
+.receipt dt{color:var(--muted)}
+.receipt dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.receipt dd.no{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.receipt-foot{margin-top:22px;font-size:.88rem;line-height:1.85;color:var(--body);max-width:36em}
+.receipt-issuer{margin-top:26px;font-size:.8rem;color:var(--muted)}
+.done-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(28px,4vh,40px)}
+.done-actions .pill{border:0;cursor:pointer;font:inherit;font-size:.95rem}
+
+@media(max-width:700px){
+  .leaf{padding:28px 18px 12px;font-size:.82rem}
+  .receipt dl{grid-template-columns:1fr}
+  .receipt dt{padding-bottom:0;box-shadow:none}
+  .receipt dd{padding-top:4px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sheet,.sheet-step,.sheet-step *,.leaf,.receipt,.receipt *,.done-actions,.envelope *,.loader,.loader *{animation:none !important;transition:none !important}
+  .receipt-mark path{stroke-dashoffset:0;fill-opacity:1}
+}
+
+/* 인쇄: 접수증만 깔끔하게 */
+@media print{
+  .apply-side,.filed,.done-actions,footer,.bar{display:none !important}
+  .apply{display:block;padding:0;background:#fff;min-height:0}
+  .sheet{box-shadow:none;padding:0}
+  .receipt,.receipt *{animation:none}
+  .receipt{max-width:720px;margin:0 auto;padding:48px 40px}
+}
+
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* 로딩바: 질문을 불러오는 동안 차오릅니다 */
+.loader{padding:clamp(40px,8vh,90px) 0 clamp(30px,6vh,70px);transition:opacity .45s ease,transform .5s var(--ease)}
+.loader.is-done{opacity:0;transform:translateY(-10px);transition-delay:.25s}
+.loader-title{font-size:clamp(20px,1.8vw,26px);font-weight:700;letter-spacing:-.035em}
+.loader-track{position:relative;height:6px;margin:26px 0 14px;border-radius:6px;background:var(--grey-bg);overflow:hidden}
+.loader-track i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);border-radius:6px;
+  background:linear-gradient(90deg,var(--yellow) 0%,var(--yellow-dp) 100%);transition:transform .25s linear}
+.loader.is-done .loader-track i{transition:transform .35s var(--ease)}
+/* 막대 위를 지나가는 옅은 빛 */
+.loader-track::after{content:'';position:absolute;inset:0;width:30%;background:linear-gradient(90deg,#fff0,#ffffffa6,#fff0);animation:sheen 1.4s ease-in-out infinite}
+@keyframes sheen{from{transform:translateX(-100%)}to{transform:translateX(340%)}}
+.loader-sub{display:flex;justify-content:space-between;gap:12px;font-size:.86rem;color:var(--muted)}
+.loader-sub b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* 접수증: 심볼이 한 획으로 그려진 뒤 채워지고, 빛이 퍼지며 내용이 한 줄씩 나타납니다 */
+.receipt-mark{width:64px;height:auto;overflow:visible;flex:none}
+.receipt-mark path{fill:var(--yellow);fill-opacity:0;stroke:var(--yellow-dp);stroke-width:46;stroke-linejoin:round;
+  stroke-dasharray:1000;stroke-dashoffset:1000;animation:draw 1.3s var(--ease) .25s forwards,fill-in .6s ease 1.25s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fill-in{to{fill-opacity:1}}
+.receipt header{position:relative}
+.receipt header::before{content:'';position:absolute;left:32px;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
+  background:var(--yellow);opacity:0;pointer-events:none;animation:ripple 1.1s var(--ease) 1.3s}
+@keyframes ripple{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(26)}}
+.receipt header div,.receipt dt,.receipt dd,.receipt-foot,.receipt-issuer{animation:rise .7s var(--ease) both}
+.receipt header div{animation-delay:.5s}
+.receipt dt:nth-of-type(1),.receipt dd:nth-of-type(1){animation-delay:.85s}
+.receipt dt:nth-of-type(2),.receipt dd:nth-of-type(2){animation-delay:.93s}
+.receipt dt:nth-of-type(3),.receipt dd:nth-of-type(3){animation-delay:1.01s}
+.receipt dt:nth-of-type(4),.receipt dd:nth-of-type(4){animation-delay:1.09s}
+.receipt dt:nth-of-type(5),.receipt dd:nth-of-type(5){animation-delay:1.17s}
+.receipt dt:nth-of-type(6),.receipt dd:nth-of-type(6){animation-delay:1.25s}
+.receipt dt:nth-of-type(7),.receipt dd:nth-of-type(7){animation-delay:1.33s}
+.receipt-foot{animation-delay:1.45s}
+.receipt-issuer{animation-delay:1.55s}
+.done-actions{animation:rise .7s var(--ease) both 1.65s}
+@media(prefers-reduced-motion:reduce){
+  .loader,.loader *,.receipt *,.done-actions{animation:none !important;transition:none !important}
+  .receipt-mark path{stroke-dashoffset:0;fill-opacity:1}
+}
