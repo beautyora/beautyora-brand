@@ -38,20 +38,26 @@
       <a class="pill apply-link" data-from="partner" href="/apply/?from=partner">제안서 작성하기</a>
     </div>
   </div>
+  <div class="readbar" aria-hidden="true"><i id="readbar"></i></div>
 </header>
 
 <main id="main">
 
 <!-- 00 ─ 오프닝 ─────────────────────────────────────────── -->
 <section class="doc-hero">
-  <svg class="doc-mark" viewBox="0 0 2156 1952" aria-hidden="true" focusable="false"><use href="#ora"></use></svg>
+  <svg class="doc-mark" id="doc-mark" viewBox="-40 -40 2236 2032" aria-hidden="true" focusable="false"><path d="M1532,1392c163.46-131.43,75.07-318.98-26.37-458.63-155.59-214.21-403.16-365.14-676.35-329.08-108.94,14.38-216.5,61.09-313.28,110.72l91.15-28.85c83.96-21.56,170.3-28.43,256.83-22.14l-72.71,28.26c-130.04,58.86-175.3,169.27-88.91,292.35,63.13,89.95,165.63,177.39,255,241,171.41,122.01,358.53,209.23,574.63,166.37-64.95,52.22-174.04,92.68-254.01,116.99-277.66,84.42-548.76,83.47-780.03-109.96-192.83-161.28-315.24-471.72-64.23-644.3,99.98-68.74,235.19-131.51,345.55-184.45,165.44-79.38,392.75-189.64,575.74-202.26,267.19-18.43,462.66,168.6,535.51,412.45,89.19,298.54-51.88,550.72-358.53,611.53Z" pathLength="1000"/></svg>
   <div class="doc-hero-inner">
     <p class="eyebrow">파트너 브랜드 전용 안내</p>
-    <h1>
+    <h1 data-split>
       파트너 브랜드께<br>
       드리는 매입 유통 안내.
     </h1>
     <p class="lead">뷰티오라는 협의된 상품을 직접 매입해 유통합니다. 입점을 결정하기 전에 확인하실 구조와 절차, 조건을 한 페이지에 정리했습니다.</p>
+    <ul class="doc-stats">
+      <li><b><span data-count="200">200</span>+</b><span>취급 브랜드</span></li>
+      <li><b><span data-count="800">800</span>+</b><span>취급 제품</span></li>
+      <li><b><span data-count="6">6</span></b><span>입점 채널 유형</span></li>
+    </ul>
   </div>
   <ol class="toc">
     <li><a href="#s1"><span>01</span>위탁과 매입의 차이</a></li>
@@ -67,7 +73,7 @@
 <section class="doc-sec" id="s1">
   <div class="doc-head">
     <span class="doc-num">01</span>
-    <h2>팔리지 않으면<br> 돌아오는 구조가 아닙니다.</h2>
+    <h2 data-split>팔리지 않으면<br> 돌아오는 구조가 아닙니다.</h2>
     <p class="sub">일반 위탁은 판매가 끝날 때까지 재고와 반품의 부담이 브랜드에 남습니다. 뷰티오라는 매입 시점에 거래를 완결합니다.</p>
   </div>
   <div class="doc-body">
@@ -91,11 +97,11 @@
 <section class="doc-sec alt" id="s2">
   <div class="doc-head">
     <span class="doc-num">02</span>
-    <h2>제안서 접수부터<br> 진열까지.</h2>
+    <h2 data-split>제안서 접수부터<br> 진열까지.</h2>
     <p class="sub">단계마다 브랜드가 준비하실 것과 예상 기간을 함께 적었습니다.</p>
   </div>
   <div class="doc-body">
-    <ol class="steps">
+    <ol class="steps timeline" id="timeline">
       <li><div><h3>제안서 접수</h3><p>회사 · 브랜드 · 제품 정보와 소개 자료를 보내 주세요.</p></div><span class="when"><span class="tbd" aria-label="기간 확정 예정"></span></span></li>
       <li><div><h3>상품 검토</h3><p>제품력 · 가격 · 구성 · 타깃을 검토하고 적합한 채널을 선별합니다.</p></div><span class="when"><span class="tbd" aria-label="기간 확정 예정"></span></span></li>
       <li><div><h3>조건 협의</h3><p>매입 여부, 수량, 공급가를 함께 정합니다.</p></div><span class="when"><span class="tbd" aria-label="기간 확정 예정"></span></span></li>
@@ -111,7 +117,7 @@
 <section class="doc-sec" id="s3">
   <div class="doc-head">
     <span class="doc-num">03</span>
-    <h2>계약 조건.</h2>
+    <h2 data-split>계약 조건.</h2>
     <p class="sub">공란으로 둔 항목은 내부 확정 후 안내드립니다.</p>
   </div>
   <div class="doc-body">
@@ -132,7 +138,7 @@
 <section class="doc-sec alt" id="s4">
   <div class="doc-head">
     <span class="doc-num">04</span>
-    <h2>기본으로 포함되는 것,<br> 따로 협의하는 것.</h2>
+    <h2 data-split>기본으로 포함되는 것,<br> 따로 협의하는 것.</h2>
   </div>
   <div class="doc-body">
     <div class="scope">
@@ -163,7 +169,7 @@
 <section class="doc-sec" id="s5">
   <div class="doc-head">
     <span class="doc-num">05</span>
-    <h2>입점에서 끝나지 않고,<br> 팔리는 경로까지.</h2>
+    <h2 data-split>입점에서 끝나지 않고,<br> 팔리는 경로까지.</h2>
   </div>
   <div class="doc-body">
     <ol class="steps">
@@ -179,7 +185,7 @@
 <!-- CTA ─ 입력폼으로 ────────────────────────────────────── -->
 <section class="doc-cta">
   <svg class="contact-mark" viewBox="0 0 2156 1952" aria-hidden="true" focusable="false"><use href="#ora"></use></svg>
-  <h2>검토가 끝나셨다면,<br> 입점 제안서를 보내 주세요.</h2>
+  <h2 data-split>검토가 끝나셨다면,<br> 입점 제안서를 보내 주세요.</h2>
   <p class="sub">입력은 단계별로 나뉘어 있고, 작성 중인 내용은 이 기기에 임시 저장됩니다.</p>
   <a class="pill lg apply-link" data-from="partner" href="/apply/?from=partner">입점 제안서 작성하기</a>
 </section>
@@ -188,7 +194,7 @@
 <section class="faq" id="faq">
   <div class="faq-head">
     <span class="doc-num">06</span>
-    <h2>자주 묻는 질문.</h2>
+    <h2 data-split>자주 묻는 질문.</h2>
     <p class="sub">계약을 앞둔 브랜드가 가장 자주 묻는 질문을 모았습니다.</p>
   </div>
   <div class="faq-list">
@@ -253,5 +259,6 @@
 </footer>
 
 <script src="/sub.js"></script>
+<script src="/partner.js"></script>
 </body>
 </html>
