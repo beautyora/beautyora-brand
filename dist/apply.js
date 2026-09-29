@@ -484,14 +484,15 @@
 
   /* ── 불러오기 ─────────────────────────────────────────── */
   var booted = false;
-  function loadFailed() {
+  function loadFailed(reason) {
     form.setAttribute('aria-busy', 'false');
     stepsBox.innerHTML = '';
-    loadNote.innerHTML = '입력폼을 불러오지 못했습니다. 잠시 후 새로고침하시거나, ' + linkHTML('구글 폼') + '으로 제안해 주세요. 문의 ' + MAIL;
+    loadNote.innerHTML = '입력폼을 불러오지 못했습니다. 잠시 후 새로고침하시거나, ' + linkHTML('구글 폼') + '으로 제안해 주세요. 문의 ' + MAIL +
+      '<br><small style="opacity:.7">오류 코드: ' + String(reason || 'unknown').replace(/</g, '&lt;') + '</small>';
     loadNote.hidden = false;
   }
   function start(data) {
-    if (!data || !data.ok || !data.sections) { loadFailed(); return; }
+    if (!data || !data.ok || !data.sections) { loadFailed(data && data.error ? 'script:' + data.error + (data.message ? ' ' + data.message : '') : 'bad-data'); return; }
     if (data.url) formUrl = data.url;
     form.setAttribute('aria-busy', 'false');
     if (data.accepting === false) {
@@ -527,10 +528,33 @@
     booted = true;
   }
 
-  var ctrlLoad = typeof AbortController === 'function' ? new AbortController() : null;
-  var loadTimer = setTimeout(function () { if (ctrlLoad) ctrlLoad.abort(); }, 12000);
-  fetch(DEMO ? DEMO_URL : ENDPOINT, { signal: ctrlLoad ? ctrlLoad.signal : undefined })
-    .then(function (r) { return r.json(); })
-    .then(function (d) { clearTimeout(loadTimer); start(d); })
-    .catch(function () { clearTimeout(loadTimer); loadFailed(); });
+  /* Apps Script는 한동안 쓰지 않으면 첫 응답이 느립니다(콜드 스타트).
+     넉넉히 기다리고, 실패하면 한 번 더 시도합니다. 끝내 실패하면 이유를 화면에 적습니다. */
+  function load(tries) {
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timedOut = false;
+    var timer = setTimeout(function () { timedOut = true; if (ctrl) ctrl.abort(); }, 20000);
+    fetch(DEMO ? DEMO_URL : ENDPOINT, { signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) {
+        if (!r.ok) throw new Error('http-' + r.status);
+        return r.text();
+      })
+      .then(function (t) {
+        clearTimeout(timer);
+        var d;
+        try { d = JSON.parse(t); } catch (e) {
+          // 로그인 화면이나 오류 화면(HTML)이 오면 JSON이 아닙니다 → 배포 설정 문제
+          throw new Error(/<html|<!doctype/i.test(t) ? 'not-json(html)' : 'not-json');
+        }
+        start(d);
+      })
+      .catch(function (err) {
+        clearTimeout(timer);
+        var reason = timedOut ? 'timeout' : (err && err.message) || 'network';
+        if (reason === 'Failed to fetch' || /NetworkError|Load failed/i.test(reason)) reason = 'blocked(cors/network)';
+        if (tries > 0 && !/^not-json|^http-4/.test(reason)) { load(tries - 1); return; }
+        loadFailed(reason);
+      });
+  }
+  load(1);
 })();
