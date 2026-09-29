@@ -27,8 +27,8 @@
   var nav = $('#nav'), prev = $('#prev'), next = $('#next');
   var progress = $('#progress'), bar = $('#bar');
   var sendErr = $('#send-error'), loadNote = $('#load-note');
-  var cover = $('#cover'), coverStart = $('#cover-start'), filed = $('#filed'), sending = $('#sending');
-  var seal = $('.seal'), sealInk = $('#seal-ink'), sealPct = $('#seal-pct');
+  var filed = $('#filed'), sending = $('#sending');
+  var loader = $('#loader'), loaderBar = $('#loader-bar'), loaderPct = $('#loader-pct'), loaderMsg = $('#loader-msg');
   var DEMO = !ENDPOINT;
   var formUrl = FORM_VIEW;
   var steps = [], cur = 0;
@@ -36,7 +36,6 @@
 
   var params = new URLSearchParams(location.search);
   var from = (params.get('from') || 'direct').replace(/[^a-z0-9_-]/gi, '').slice(0, 20) || 'direct';
-  var brandParam = (params.get('b') || '').trim().slice(0, 40);
 
   /* ── 임시 저장 ────────────────────────────────────────── */
   var KEY = 'beautyora-apply-v3';
@@ -317,7 +316,6 @@
   function fillAuto() {
     $$('.f[data-kind="source"] input', form).forEach(function (el) { el.value = from; });
     $$('.f[data-kind="docno"] input', form).forEach(function (el) { el.value = docNo; });
-    if (brandParam) $$('.f[data-kind="brand"] input', form).forEach(function (el) { if (!el.value) el.value = brandParam; });
   }
 
   /* ── 순위 질문: 앞 순위에서 고른 보기는 다음 순위에서 뺍니다 ──
@@ -419,7 +417,6 @@
       if (k === i) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
     });
     if (bar) bar.style.width = ((i + 1) / steps.length * 100) + '%';
-    setSeal(i / steps.length);
     renderFiled(-1);
     prev.hidden = i === 0;
     next.textContent = i === steps.length - 1 ? '제안서 보내기' : '다음';
@@ -431,14 +428,6 @@
     if (scrollY > top) scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
   }
   prev.addEventListener('click', function () { if (cur > 0) go(cur - 1); });
-
-  /* ── 심볼 진행 표시 ───────────────────────────────────── */
-  function setSeal(p) {
-    if (!sealInk) return;
-    sealInk.style.strokeDashoffset = String(100 - Math.round(p * 100));
-    sealPct.textContent = String(Math.round(p * 100));
-    seal.classList.toggle('is-full', p >= 1);
-  }
 
   /* ── 서류철: 작성을 마친 장이 카드 아래에 쌓입니다 ────── */
   function renderFiled(arriving) {
@@ -562,7 +551,6 @@
       dl.appendChild(h('dt', { text: r[0] }));
       dl.appendChild(h('dd', { class: r[2] || null, text: r[1] }));
     });
-    $('#stamp-date').textContent = ymd(now, '.');
   }
   function finish() {
     buildReceipt();
@@ -576,12 +564,10 @@
     doneStep.hidden = false;
     $$('li', progress).forEach(function (li) { li.classList.remove('is-now'); li.classList.add('is-done'); });
     if (bar) bar.style.width = '100%';
-    setSeal(1);
     doneStep.focus({ preventScroll: true });
     var top = form.getBoundingClientRect().top + scrollY - 100;
     scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
   }
-  $('#print-receipt').addEventListener('click', function () { window.print(); });
   var KEEP = '작성하신 내용은 이 기기에 그대로 남아 있습니다.';
   function send() {
     if (DEMO) {
@@ -622,8 +608,8 @@
   /* ── 불러오기 ─────────────────────────────────────────── */
   var booted = false;
   function loadFailed(reason) {
-    cover.hidden = true;
-    form.hidden = false;
+    clearInterval(loadTick);
+    loader.hidden = true;
     form.setAttribute('aria-busy', 'false');
     stepsBox.innerHTML = '';
     loadNote.innerHTML = '입력폼을 불러오지 못했습니다. 잠시 후 새로고침하시거나, ' + linkHTML('구글 폼') + '으로 제안해 주세요. 문의 ' + MAIL +
@@ -635,8 +621,8 @@
     if (data.url) formUrl = data.url;
     form.setAttribute('aria-busy', 'false');
     if (data.accepting === false) {
-      cover.hidden = true;
-      form.hidden = false;
+      clearInterval(loadTick);
+      loader.hidden = true;
       stepsBox.innerHTML = '';
       loadNote.textContent = data.closedMessage || ('지금은 제안서 접수를 잠시 멈췄습니다. ' + MAIL + '으로 문의해 주세요.');
       loadNote.hidden = false;
@@ -654,7 +640,6 @@
     fillAuto();
     syncOther();
     syncRanking();
-    nav.hidden = false;
     if (DEMO) {
       loadNote.textContent = '미리보기: 구글 폼과 연결되기 전이라 예시 질문을 보여주고 있습니다.';
       loadNote.hidden = false;
@@ -666,40 +651,46 @@
       });
     }
     show(0);
-    booted = true;
-    readyCover(data);
+    stepsBox.hidden = true;
+    nav.hidden = true;
+    finishLoader(function () {
+      stepsBox.hidden = false;
+      nav.hidden = false;
+      booted = true;
+      if (!reduce) {
+        stagger(steps[0]);
+        steps[0].classList.add('enter');
+        setTimeout(function () { steps[0].classList.remove('enter'); }, 900);
+      }
+    });
   }
 
-  /* ── 표지(초대장) ─────────────────────────────────────── */
-  function initCover() {
-    $('#cover-date').textContent = ymd(new Date(), '. ');
-    $('#cover-no').textContent = 'No. ' + docNo;
-    if (brandParam) $('#cover-to').textContent = brandParam + ' 담당자님께';
+  /* ── 로딩바 ─────────────────────────────────────────────
+     실제 진행률은 알 수 없어, 처음엔 빠르게 나중엔 천천히 90%까지 차오르다가
+     질문이 도착하면 100%를 채우고 입력칸을 보여줍니다. */
+  var loadP = 0, loadTick = null;
+  var MSGS = [[0, '질문을 불러오는 중'], [35, '입력 항목을 정리하는 중'], [70, '거의 준비되었습니다']];
+  function paintLoader(p) {
+    loaderBar.style.transform = 'scaleX(' + (p / 100) + ')';
+    loaderPct.textContent = Math.round(p) + '%';
+    MSGS.forEach(function (m) { if (p >= m[0]) loaderMsg.textContent = m[1]; });
   }
-  function readyCover() {
-    var n = $$('.f[data-qid]', form).filter(function (f) { return !f.hidden; }).length;
-    $('#cover-size').textContent = '질문 ' + n + '개 · 약 ' + Math.max(2, Math.round(n / 4)) + '분';
-    var raw = store.get();
-    var started = Object.keys(raw).some(function (k) { var v = raw[k]; return Array.isArray(v) ? v.length : v; });
-    coverStart.textContent = started ? '이어서 작성하기' : '작성 시작';
-    coverStart.disabled = false;
+  function startLoader() {
+    loadTick = setInterval(function () {
+      loadP += (90 - loadP) * 0.06;
+      paintLoader(loadP);
+    }, 120);
   }
-  function openSheet() {
-    cover.hidden = true;
-    form.hidden = false;
-    stagger(steps[cur]);
-    steps[cur].classList.add('enter');
-    setTimeout(function () { steps[cur].classList.remove('enter'); }, 900);
-    var hd = $('h2', steps[cur]);
-    if (hd) { hd.setAttribute('tabindex', '-1'); hd.focus({ preventScroll: true }); }
+  function finishLoader(done) {
+    clearInterval(loadTick);
+    loader.classList.add('is-done');
+    paintLoader(100);
+    setTimeout(function () {
+      loader.hidden = true;
+      done();
+    }, reduce ? 0 : 520);
   }
-  coverStart.addEventListener('click', function () {
-    if (coverStart.disabled) return;
-    if (reduce) { openSheet(); return; }
-    cover.classList.add('is-lifting');
-    setTimeout(openSheet, 520);
-  });
-  initCover();
+  startLoader();
 
   /* Apps Script는 한동안 쓰지 않으면 첫 응답이 느립니다(콜드 스타트).
      넉넉히 기다리고, 실패하면 한 번 더 시도합니다. 끝내 실패하면 이유를 화면에 적습니다. */
