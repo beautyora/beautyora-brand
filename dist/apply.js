@@ -556,5 +556,21 @@
         loadFailed(reason);
       });
   }
-  load(1);
+  /* 예전 호스팅이 남긴 서비스 워커가 이 주소의 요청을 가로채면 불러오기가 실패합니다.
+     이 사이트는 서비스 워커를 쓰지 않으므로, 남아 있으면 지우고 한 번만 새로고침합니다. */
+  var swFlag = 'beautyora-sw-cleared';
+  var swSeen = false;
+  try { swSeen = sessionStorage.getItem(swFlag) === '1'; } catch (e) { /* 무시 */ }
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller && !swSeen) {
+    try { sessionStorage.setItem(swFlag, '1'); } catch (e) { /* 무시 */ }
+    navigator.serviceWorker.getRegistrations().then(function (rs) {
+      return Promise.all(rs.map(function (r) { return r.unregister(); }));
+    }).then(function () {
+      if (window.caches && caches.keys) {
+        return caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); });
+      }
+    }).then(function () { location.reload(); }, function () { load(1); });
+  } else {
+    load(1);
+  }
 })();
