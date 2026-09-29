@@ -10,13 +10,11 @@
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
 
-  /* ── 입점 제안 폼 ─────────────────────────────────────── */
-  var FORM = 'https://docs.google.com/forms/d/e/1FAIpQLScFUxfaVQmYZxskN-9nhjsCRx7HdjH-aqi5wPaeU3Z9AOwdEg/viewform';
+  /* ── 입점 제안 폼 ─────────────────────────────────────
+     메인의 버튼은 모두 입점 제안서 페이지로 보냅니다.
+     from=main 은 응답 시트에서 유입 경로를 가려내는 데 씁니다. */
   $$('.form-link').forEach(function (a) {
-    a.href = FORM;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.setAttribute('aria-label', a.textContent.trim() + ' (새 탭에서 구글 폼 열기)');
+    a.href = '/apply/?from=main';
   });
 
   /* ── 화면에 들어오면 클래스 붙이기 ───────────────────── */

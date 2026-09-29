@@ -1,0 +1,7 @@
+# 파트너 안내(숨김 페이지): 검색 엔진에 노출하지 않습니다.
+/partner-yga1u6
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Referrer-Policy: same-origin
+/partner-yga1u6/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Referrer-Policy: same-origin

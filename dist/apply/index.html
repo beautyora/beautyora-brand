@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FAFAF7">
+<title>입점 제안서 — BEAUTYORA</title>
+<meta name="description" content="뷰티오라 입점 제안서를 작성합니다. 회사·브랜드·제품 정보를 보내 주시면 검토 후 적합한 유통 채널을 정리해 회신드립니다.">
+<link rel="icon" href="/assets/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/sub.css">
+</head>
+<body class="sub-page">
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ora" viewBox="0 0 2156 1952">
+      <path d="M1532,1392c163.46-131.43,75.07-318.98-26.37-458.63-155.59-214.21-403.16-365.14-676.35-329.08-108.94,14.38-216.5,61.09-313.28,110.72l91.15-28.85c83.96-21.56,170.3-28.43,256.83-22.14l-72.71,28.26c-130.04,58.86-175.3,169.27-88.91,292.35,63.13,89.95,165.63,177.39,255,241,171.41,122.01,358.53,209.23,574.63,166.37-64.95,52.22-174.04,92.68-254.01,116.99-277.66,84.42-548.76,83.47-780.03-109.96-192.83-161.28-315.24-471.72-64.23-644.3,99.98-68.74,235.19-131.51,345.55-184.45,165.44-79.38,392.75-189.64,575.74-202.26,267.19-18.43,462.66,168.6,535.51,412.45,89.19,298.54-51.88,550.72-358.53,611.53Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+
+<header id="siteheader">
+  <div class="head-inner">
+    <a class="brandmark" href="/" aria-label="뷰티오라 홈"><img src="/assets/logo.svg" alt="BEAUTYORA" width="2601" height="443"></a>
+    <div class="header-actions">
+      <a class="head-back" href="/">뷰티오라 홈으로</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="apply">
+
+  <aside class="apply-side">
+    <p class="hello" data-brand-wrap hidden><span data-brand></span> 담당자님, 반갑습니다.</p>
+    <h1>입점 제안서.</h1>
+    <p class="sub">보내 주신 내용을 바탕으로 브랜드와 제품 특성을 검토한 뒤, 적합한 유통 채널을 정리해 회신드립니다.</p>
+
+    <ol class="progress" id="progress" aria-label="작성 단계"></ol>
+
+    <details class="form-intro" id="form-intro" hidden>
+      <summary>신청 안내 자세히 보기</summary>
+      <div id="form-desc"></div>
+    </details>
+
+    <div class="side-help">
+      <p>작성 중인 내용은 이 기기에 임시 저장되어, 창을 닫았다 다시 열어도 이어서 쓸 수 있습니다.</p>
+      <p>문의 <a href="mailto:pickora07@gmail.com">pickora07@gmail.com</a></p>
+    </div>
+  </aside>
+
+  <div>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+
+    <form class="sheet" id="apply" novalidate aria-busy="true">
+      <!-- 질문은 구글 폼에서 읽어 와 apply.js가 그립니다. 구글 폼을 고치면 여기도 자동으로 바뀝니다. -->
+      <div id="steps">
+        <div class="skel" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s3"></i><i class="s4"></i></div>
+        <p class="sr" role="status">입력폼을 불러오는 중입니다.</p>
+      </div>
+      <div class="notice" id="load-note" hidden role="alert"></div>
+
+      <!-- 확인 · 제출 (항상 마지막) -->
+      <fieldset class="sheet-step" data-step="review" data-title="확인 · 제출" hidden>
+        <legend class="sr">확인 · 제출</legend>
+        <span class="step-count"></span>
+        <h2>보내기 전에 확인해 주세요.</h2>
+        <p class="sub">고칠 부분이 있으면 각 항목의 수정을 누르세요.</p>
+        <div class="review" id="review"></div>
+        <div class="fields" id="review-extra"></div>
+        <div class="notice err" id="send-error" hidden role="alert"></div>
+      </fieldset>
+
+      <!-- 완료 -->
+      <div class="sheet-step done" data-step="done" hidden tabindex="-1">
+        <svg class="done-mark" viewBox="0 0 2156 1952" aria-hidden="true" focusable="false"><use href="#ora"></use></svg>
+        <h2>제안서를 받았습니다.</h2>
+        <p class="sub">보내 주신 내용을 검토한 뒤, 입력하신 이메일로 회신드립니다. 브랜드 소개서나 제품 카탈로그가 있다면 pickora07@gmail.com으로 보내 주세요. 검토에 큰 도움이 됩니다.</p>
+        <ol class="steps">
+          <li><div><h3>상품 검토</h3><p>제품력 · 가격 · 구성 · 타깃을 살펴봅니다.</p></div></li>
+          <li><div><h3>채널 정리</h3><p>브랜드에 맞는 채널을 정리합니다.</p></div></li>
+          <li><div><h3>회신</h3><p>검토 결과와 다음 단계를 메일로 안내드립니다.</p></div></li>
+        </ol>
+        <a class="pill" href="/">뷰티오라 홈으로</a>
+      </div>
+
+      <!-- 사람에게는 보이지 않는 칸: 자동 입력 봇 거르기 -->
+      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="sheet-nav" id="nav" hidden>
+        <button class="ghost" type="button" id="prev" hidden>이전</button>
+        <button class="pill lg" type="submit" id="next">다음</button>
+      </div>
+    </form>
+  </div>
+
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-bottom">
+      <p>주식회사 픽오라 · 서울 마포구 서강로 137-7 202호 · pickora07@gmail.com</p>
+      <p>© 2026 BEAUTYORA. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/sub.js"></script>
+<script src="/apply.js"></script>
+</body>
+</html>
