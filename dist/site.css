@@ -552,6 +552,20 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   margin-left:auto;font-size:.9rem;color:var(--body)}
 .totop:hover{opacity:.6}
 .foot-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+/* 회사 정보: 항목 사이는 가운뎃점으로 구분하고, 좁은 화면에서는 자연스럽게 줄바꿈됩니다 */
+.foot-bottom{align-items:flex-end}
+.foot-info{font-style:normal;display:grid;gap:6px;line-height:1.7}
+.foot-info p{display:flex;flex-wrap:wrap;column-gap:0}
+.foot-info b{font-weight:600;color:var(--body)}
+.foot-info p > * + *::before{content:'·';margin:0 9px;color:#33342e40}
+.foot-info a{color:var(--body);transition:opacity .3s}
+.foot-info a:hover{opacity:.6}
+.foot-privacy{font-weight:700;color:var(--ink) !important}
+.foot-copy{white-space:nowrap}
+@media(max-width:700px){
+  .foot-info p{display:grid;gap:2px}
+  .foot-info p > * + *::before{content:none}
+}
 
 /* ══ 모션 ═════════════════════════════════════════════════ */
 /* 마스크는 line-height 가 아니라 글자 상자를 기준으로 잡아야 합니다.
