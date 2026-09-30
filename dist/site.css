@@ -726,7 +726,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
 /* 관광객 타일: 왼쪽 단계, 오른쪽 세로 사진 */
 .tile-tour{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(16px,1.8vw,26px);align-items:stretch}
 .tour-photo{margin:0;aspect-ratio:auto;min-height:100%;border-radius:18px;background:#ffffff66}
-.tour-photo img{position:absolute;inset:0}
+.tour-photo img{position:absolute;inset:0;object-position:30% 45%}
 @media(min-width:701px) and (max-height:1000px){
   .chan-photo{height:clamp(120px,17vh,190px)}
 }
@@ -734,7 +734,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .chan-photo{height:180px}
   .tile-tour{grid-template-columns:1fr}
   .tour-photo{order:-1;aspect-ratio:4/3;min-height:0}
-  .tour-photo img{object-position:50% 60%}
+  .tour-photo img{object-position:50% 44%}
 }
 
 /* ══ 경험 4단계 사진 — 글은 왼쪽, 정사각 사진은 오른쪽 ═════ */
