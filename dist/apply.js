@@ -13,6 +13,8 @@
      비어 있으면 미리보기 모드: 예시 질문(demo.json)으로 화면만 보여주고 제출은 막습니다. */
   var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzGE1ucvLJqnbDdF9Erb9lB6ivBOpKaD3gNMQ0uuMVoEbhl6MPnSS9EsY3PfkGnJK7v/exec';
   var DEMO_URL = '/apply/demo.json';
+  var PROXY = '/api/form';                       // Netlify가 저장해 두고 바로 내주는 질문 목록 (netlify/functions/form.mjs)
+  var FORM_CACHE = 'beautyora-form-cache';       // 이 기기에 저장한 질문 목록 (메인·숨김 페이지에서 미리 받아 둠)
   var FORM_VIEW = 'https://docs.google.com/forms/d/e/1FAIpQLScFUxfaVQmYZxskN-9nhjsCRx7HdjH-aqi5wPaeU3Z9AOwdEg/viewform';
   var MAIL = 'pickora07@gmail.com';
   var PER_STEP = 5;   // 구글 폼에 섹션이 없을 때 한 단계에 담을 질문 수
@@ -675,7 +677,14 @@
     loaderPct.textContent = Math.round(p) + '%';
     MSGS.forEach(function (m) { if (p >= m[0]) loaderMsg.textContent = m[1]; });
   }
+  var loaderShownAt = 0;
   function startLoader() {
+    // 0.3초 안에 준비되면 로딩바를 보여주지 않습니다
+    setTimeout(function () {
+      if (loader.hidden) return;
+      loader.classList.remove('is-pending');
+      loaderShownAt = Date.now();
+    }, 300);
     loadTick = setInterval(function () {
       loadP += (90 - loadP) * 0.06;
       paintLoader(loadP);
@@ -683,6 +692,7 @@
   }
   function finishLoader(done) {
     clearInterval(loadTick);
+    if (loader.hidden || !loaderShownAt) { loader.hidden = true; done(); return; }
     loader.classList.add('is-done');
     paintLoader(100);
     setTimeout(function () {
@@ -692,33 +702,96 @@
   }
   startLoader();
 
-  /* Apps Script는 한동안 쓰지 않으면 첫 응답이 느립니다(콜드 스타트).
-     넉넉히 기다리고, 실패하면 한 번 더 시도합니다. 끝내 실패하면 이유를 화면에 적습니다. */
-  function load(tries) {
+  /* ── 불러오는 순서 ─────────────────────────────────────
+     1) 이 기기에 저장된 질문 목록이 있으면 바로 그리고, 뒤에서 최신인지 확인합니다.
+     2) 없으면 Netlify 저장본(/api/form)을 받습니다. 대부분 0.1~0.3초.
+     3) 그것도 실패하면 Apps Script에 직접 묻습니다(느리지만 확실). 한 번 재시도합니다. */
+  function readCache() {
+    try {
+      var c = JSON.parse(localStorage.getItem(FORM_CACHE) || 'null');
+      if (c && c.data && c.data.ok && c.data.sections && Date.now() - c.t < 24 * 3600 * 1000) return c;
+    } catch (e) { /* 무시 */ }
+    return null;
+  }
+  function writeCache(d) {
+    try { localStorage.setItem(FORM_CACHE, JSON.stringify({ t: Date.now(), data: d })); } catch (e) { /* 무시 */ }
+  }
+  function sig(d) { return JSON.stringify([d.sections, d.accepting, d.description]); }
+
+  function fetchJSON(url, ms) {
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var timedOut = false;
-    var timer = setTimeout(function () { timedOut = true; if (ctrl) ctrl.abort(); }, 20000);
-    fetch(DEMO ? DEMO_URL : ENDPOINT, { signal: ctrl ? ctrl.signal : undefined })
+    var timer = setTimeout(function () { timedOut = true; if (ctrl) ctrl.abort(); }, ms);
+    return fetch(url, { signal: ctrl ? ctrl.signal : undefined })
       .then(function (r) {
         if (!r.ok) throw new Error('http-' + r.status);
         return r.text();
       })
       .then(function (t) {
         clearTimeout(timer);
-        var d;
-        try { d = JSON.parse(t); } catch (e) {
+        try { return JSON.parse(t); } catch (e) {
           // 로그인 화면이나 오류 화면(HTML)이 오면 JSON이 아닙니다 → 배포 설정 문제
           throw new Error(/<html|<!doctype/i.test(t) ? 'not-json(html)' : 'not-json');
         }
-        start(d);
-      })
-      .catch(function (err) {
+      }, function (err) {
         clearTimeout(timer);
         var reason = timedOut ? 'timeout' : (err && err.message) || 'network';
         if (reason === 'Failed to fetch' || /NetworkError|Load failed/i.test(reason)) reason = 'blocked(cors/network)';
-        if (tries > 0 && !/^not-json|^http-4/.test(reason)) { load(tries - 1); return; }
-        loadFailed(reason);
+        throw new Error(reason);
       });
+  }
+  function fromProxy() {
+    return fetchJSON(PROXY, 8000).then(function (d) {
+      if (!d || !d.ok || !d.sections) throw new Error('proxy');
+      return d;
+    });
+  }
+  function fromScript(tries) {
+    return fetchJSON(ENDPOINT, 20000).catch(function (err) {
+      if (tries > 0 && !/^not-json|^http-4/.test(err.message)) return fromScript(tries - 1);
+      throw err;
+    });
+  }
+  function fetchFresh() {
+    return fromProxy().catch(function () { return fromScript(1); });
+  }
+
+  // 사용자가 입력을 시작했는지 (뒤에서 받은 최신 질문으로 화면을 바꿔도 되는지 판단)
+  var touched = false;
+  form.addEventListener('input', function () { touched = true; }, true);
+  form.addEventListener('change', function () { touched = true; }, true);
+
+  function rebuild(d) {
+    questions = {}; steps = []; cur = 0; booted = false;
+    ranked.length = 0; unranked.length = 0;
+    $('#review-extra').innerHTML = '';
+    progress.innerHTML = '';
+    stepsBox.innerHTML = '';
+    filed.innerHTML = '';
+    loadNote.hidden = true;
+    start(d);
+  }
+
+  function load() {
+    if (DEMO) {
+      fetchJSON(DEMO_URL, 8000).then(start, function (e) { loadFailed(e.message); });
+      return;
+    }
+    var cached = readCache();
+    if (cached) {
+      start(cached.data);
+      // 뒤에서 최신인지 확인: 바뀌었으면 저장하고, 아직 입력 전이면 화면도 바꿉니다
+      fetchFresh().then(function (d) {
+        if (!d || !d.ok || !d.sections) return;
+        writeCache(d);
+        if (sig(d) !== sig(cached.data) && !touched && cur === 0) rebuild(d);
+      }, function () { /* 저장본으로 계속 씁니다 */ });
+      return;
+    }
+    fetchFresh().then(function (d) {
+      if (d && d.ok && d.sections) writeCache(d);
+      start(d);
+    }, function (err) { loadFailed(err.message); });
   }
   /* 예전 호스팅이 남긴 서비스 워커가 이 주소의 요청을 가로채면 불러오기가 실패합니다.
      이 사이트는 서비스 워커를 쓰지 않으므로, 남아 있으면 지우고 한 번만 새로고침합니다. */
@@ -733,8 +806,8 @@
       if (window.caches && caches.keys) {
         return caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); });
       }
-    }).then(function () { location.reload(); }, function () { load(1); });
+    }).then(function () { location.reload(); }, function () { load(); });
   } else {
-    load(1);
+    load();
   }
 })();
