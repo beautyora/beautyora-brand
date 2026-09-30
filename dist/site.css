@@ -767,3 +767,27 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
 /* 등장 모션(.rise.lit)이 호버 들림을 덮지 않도록 한 번 더 적어둡니다 */
 .value.rise.lit:hover{transform:translateY(-6px)}
 .tile.rise.lit:hover{transform:translateY(-4px)}
+
+/* ══ 카카오톡 상담 ═════════════════════════════════════════
+   카카오 노랑(#FEE500)은 사이트의 연노랑과 섞이지 않도록 작은 원 안에만 쓰고,
+   말풍선 심볼은 카카오 가이드대로 변형 없이 검정 85%로 둡니다. */
+.kk-dot{display:inline-grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:#FEE500}
+.kk-ico{width:18px;height:18px;fill:#000000d9}
+.kakao-btn{gap:10px;padding-left:10px}
+.way-actions .kakao-btn .kk-dot{width:28px;height:28px}
+
+.kakao-fab{
+  position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;
+  display:flex;align-items:center;gap:0;height:56px;padding:0 13px;border-radius:40px;
+  background:var(--white);color:var(--ink);font-size:.9rem;font-weight:600;
+  box-shadow:0 14px 34px #33342e29,0 0 0 1px #33342e0f;
+  opacity:0;transform:translateY(16px) scale(.92);pointer-events:none;
+  transition:opacity .45s ease,transform .6s cubic-bezier(.16,1,.3,1),gap .45s cubic-bezier(.16,1,.3,1),padding .45s cubic-bezier(.16,1,.3,1),box-shadow .35s;
+}
+.kakao-fab.is-on{opacity:1;transform:none;pointer-events:auto}
+.kk-label{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .45s cubic-bezier(.16,1,.3,1)}
+.kakao-fab:hover,.kakao-fab:focus-visible{gap:10px;padding-right:20px;box-shadow:0 18px 40px #33342e33,0 0 0 1px #33342e14}
+.kakao-fab:hover .kk-label,.kakao-fab:focus-visible .kk-label{max-width:9em}
+@media(max-width:700px){.kakao-fab{height:52px;padding:0 11px}}
+@media(prefers-reduced-motion:reduce){.kakao-fab,.kk-label{transition:none}}
+@media print{.kakao-fab{display:none}}
