@@ -542,3 +542,5 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 @media(prefers-reduced-motion:reduce){
   .doc-mark path{fill-opacity:.55}
 }
+/* 0.3초 안에 준비되면 로딩바를 보여주지 않습니다 */
+.loader.is-pending{opacity:0;transition:none}

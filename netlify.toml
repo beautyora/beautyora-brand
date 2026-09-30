@@ -1,0 +1,6 @@
+# Netlify 설정
+# - dist 폴더를 그대로 배포합니다 (빌드 과정 없음).
+# - netlify/functions 의 함수는 /api/… 주소로 동작합니다.
+[build]
+  publish = "dist"
+  functions = "netlify/functions"

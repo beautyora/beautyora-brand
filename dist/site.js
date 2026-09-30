@@ -360,3 +360,26 @@ if ('serviceWorker' in navigator) {
     rs.forEach(function (r) { r.unregister(); });
   }).catch(function () {});
 }
+
+/* 입점 제안서 질문 목록 미리 받기 — 메인·숨김 페이지를 보는 동안 받아 두면
+   "입점 제안하기"를 눌렀을 때 입력폼이 바로 열립니다 (apply.js가 같은 저장본을 씁니다) */
+(function () {
+  if (/^\/apply\//.test(location.pathname) || !window.fetch) return;
+  var KEY = 'beautyora-form-cache', fresh = false, started = false;
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY) || 'null');
+    fresh = !!(c && c.t && Date.now() - c.t < 5 * 60 * 1000);
+  } catch (e) { return; }   // 저장할 수 없는 환경이면 받지 않습니다
+  function go() {
+    if (started || fresh) return;
+    started = true;
+    fetch('/api/form').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (d && d.ok && d.sections) localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), data: d }));
+    }).catch(function () {});
+  }
+  // 버튼에 손이 가면 바로, 아니면 페이지가 한가해졌을 때
+  function near(e) { if (e.target.closest && e.target.closest('a[href^="/apply/"]')) go(); }
+  document.addEventListener('pointerover', near, { passive: true });
+  document.addEventListener('touchstart', near, { passive: true });
+  (window.requestIdleCallback || function (f) { setTimeout(f, 2500); })(go, { timeout: 4000 });
+})();

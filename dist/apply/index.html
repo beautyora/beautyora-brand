@@ -9,6 +9,10 @@
 <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/sub.css">
+<!-- 질문 목록을 HTML을 읽는 동시에 받기 시작하고, 제출할 Apps Script 연결을 미리 열어 둡니다 -->
+<link rel="preload" href="/api/form" as="fetch" crossorigin="anonymous">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 </head>
 <body class="sub-page">
 
@@ -56,7 +60,7 @@
     <form class="sheet" id="apply" novalidate aria-busy="true">
       <!-- 질문은 구글 폼에서 읽어 와 apply.js가 그립니다. 구글 폼을 고치면 여기도 자동으로 바뀝니다. -->
       <!-- 질문을 불러오는 동안 차오르는 로딩바 -->
-      <div class="loader" id="loader" role="status">
+      <div class="loader is-pending" id="loader" role="status">
         <p class="loader-title">입점 제안서를 준비하고 있습니다</p>
         <div class="loader-track" aria-hidden="true"><i id="loader-bar"></i></div>
         <p class="loader-sub"><span id="loader-msg">질문을 불러오는 중</span><b id="loader-pct">0%</b></p>
