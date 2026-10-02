@@ -157,8 +157,8 @@ body::after{
 .hero-veil{
   position:absolute;inset:0;pointer-events:none;
   background:
-    linear-gradient(180deg,#FCF3F4b3 0,#FCF3F400 120px),
-    linear-gradient(90deg,#FCF3F4e6 0%,#FCF3F4b8 24%,#FCF3F44d 42%,#FCF3F400 58%);
+    linear-gradient(180deg,#FFFFFFb3 0,#FFFFFF00 120px),
+    linear-gradient(90deg,#FFFFFFe6 0%,#FFFFFFb8 24%,#FFFFFF4d 42%,#FFFFFF00 58%);
 }
 /* 심볼을 콘텐츠 폭에 묶습니다 — 안 그러면 4K에서 혼자 멀리 떨어집니다 */
 .hero-markwrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:flex;justify-content:center}
@@ -176,9 +176,9 @@ body::after{
 .hero-cta .textlink{color:#4F4C2E}
 .hero-tags li{background:#ffffffb3;backdrop-filter:blur(6px)}
 
-/* 캐러셀 넘기기: 오른쪽 아래의 화살표와 점 */
+/* 캐러셀 넘기기: 오른쪽 아래의 화살표와 점 (카카오톡 버튼 왼쪽에 둡니다) */
 .hero-ctrl{
-  position:absolute;right:var(--pad);bottom:clamp(22px,4vh,40px);z-index:2;
+  position:absolute;right:max(var(--pad),96px);bottom:clamp(22px,4vh,40px);z-index:2;
   display:flex;align-items:center;gap:4px;padding:4px;border-radius:40px;
   background:#ffffffb3;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
@@ -681,10 +681,10 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .hero-media{top:52%}
   .hero-img{object-position:50% 8%}
   .is-store .hero-img{object-position:50% 30%;transform-origin:50% 30%}
-  .hero-ctrl{right:var(--gutter);bottom:18px}
+  .hero-ctrl{left:var(--gutter);right:auto;bottom:18px}  /* 오른쪽은 카카오톡 버튼 자리 */
   .hero-arrow{width:36px;height:36px}
-  .hero{background:#FCF3F4}
-  .hero-veil{background:linear-gradient(180deg,#FCF3F4 0%,#FCF3F4 52%,#FCF3F499 57%,#FCF3F400 66%)}
+  .hero{background:#FFFFFF}
+  .hero-veil{background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 52%,#FFFFFF99 57%,#FFFFFF00 66%)}
   .faq-list summary{gap:14px}
   .foot-top{margin-bottom:34px}
   .totop{margin-left:0;width:100%}
@@ -806,10 +806,11 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   display:flex;align-items:center;gap:0;height:56px;padding:0 13px;border-radius:40px;
   background:var(--white);color:var(--ink);font-size:.9rem;font-weight:600;
   box-shadow:0 14px 34px #33342e29,0 0 0 1px #33342e0f;
-  opacity:0;transform:translateY(16px) scale(.92);pointer-events:none;
-  transition:opacity .45s ease,transform .6s cubic-bezier(.16,1,.3,1),gap .45s cubic-bezier(.16,1,.3,1),padding .45s cubic-bezier(.16,1,.3,1),box-shadow .35s;
+  transition:gap .45s cubic-bezier(.16,1,.3,1),padding .45s cubic-bezier(.16,1,.3,1),box-shadow .35s;
+  animation:fab-in .6s .5s cubic-bezier(.16,1,.3,1) both;
 }
-.kakao-fab.is-on{opacity:1;transform:none;pointer-events:auto}
+/* 처음부터 보이되, 페이지가 열릴 때 살짝 떠오릅니다 */
+@keyframes fab-in{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}
 .kk-label{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .45s cubic-bezier(.16,1,.3,1)}
 .kakao-fab:hover,.kakao-fab:focus-visible{gap:10px;padding-right:20px;box-shadow:0 18px 40px #33342e33,0 0 0 1px #33342e14}
 .kakao-fab:hover .kk-label,.kakao-fab:focus-visible .kk-label{max-width:9em}

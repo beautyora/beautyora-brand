@@ -449,16 +449,3 @@ if ('serviceWorker' in navigator) {
   document.addEventListener('touchstart', near, { passive: true });
   (window.requestIdleCallback || function (f) { setTimeout(f, 2500); })(go, { timeout: 4000 });
 })();
-
-/* 카카오톡 상담 버튼: 첫 화면을 지나면 나타납니다 */
-(function () {
-  var fab = document.getElementById('kakao-fab');
-  if (!fab) return;
-  var ticking = false;
-  function update() {
-    ticking = false;
-    fab.classList.toggle('is-on', window.scrollY > Math.min(innerHeight * 0.6, 520));
-  }
-  addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  update();
-})();
