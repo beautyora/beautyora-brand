@@ -289,6 +289,72 @@
   var ticking = false;
   var hero = $('.hero'), heroImg = $('#heroimg'), heroCopy = $('.hero-copy');
   if (hero) requestAnimationFrame(function () { hero.classList.add('ready'); });
+
+  /* ── 히어로 캐러셀 ──────────────────────────────────────
+     사진이 좌우로 넘어갑니다. 6초마다 자동으로 넘기되, 넘기기 버튼에 마우스나
+     초점이 있거나 탭이 가려지면 멈춥니다. 모션 줄이기 설정에서는
+     자동 넘김 없이 버튼과 스와이프로만 넘깁니다. */
+  (function () {
+    var media = $('#herocarousel'), track = $('#herotrack');
+    if (!hero || !media || !track) return;
+    var slides = $$('.hero-slide', track), dots = $$('.hero-dots button', hero);
+    var ctrl = $('.hero-ctrl', hero);
+    var n = slides.length, cur = 0, timer = null, hold = false;
+    if (n < 2) { if (ctrl) ctrl.hidden = true; return; }
+
+    function go(i) {
+      cur = (i + n) % n;
+      hero.style.setProperty('--hi', cur);
+      slides.forEach(function (s, k) { s.setAttribute('aria-hidden', k === cur ? 'false' : 'true'); });
+      dots.forEach(function (d, k) {
+        if (k === cur) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
+    }
+    function stop() { clearInterval(timer); timer = null; }
+    function play() {
+      stop();
+      if (reduce || hold || document.hidden) return;
+      timer = setInterval(function () { go(cur + 1); }, 6000);
+    }
+
+    $$('.hero-arrow', hero).forEach(function (b) {
+      b.addEventListener('click', function () { go(cur + (+b.getAttribute('data-dir'))); play(); });
+    });
+    dots.forEach(function (d, k) {
+      d.addEventListener('click', function () { go(k); play(); });
+    });
+
+    // 스와이프: 세로 스크롤은 그대로 두고, 가로로 충분히 밀었을 때만 넘깁니다
+    var sx = null, sy = 0;
+    hero.addEventListener('touchstart', function (e) {
+      if (e.target.closest('a,button')) { sx = null; return; }
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    hero.addEventListener('touchend', function (e) {
+      if (sx === null) return;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      sx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) { go(cur + (dx < 0 ? 1 : -1)); play(); }
+    }, { passive: true });
+
+    // 키보드: 넘기기 버튼에 초점이 있을 때 좌우 화살표 키
+    if (ctrl) ctrl.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault(); go(cur + (e.key === 'ArrowRight' ? 1 : -1)); play();
+      }
+    });
+
+    function pause() { hold = true; stop(); }
+    function resume() { hold = false; play(); }
+    if (ctrl) {
+      ctrl.addEventListener('mouseenter', pause);
+      ctrl.addEventListener('mouseleave', resume);
+      ctrl.addEventListener('focusin', pause);
+      ctrl.addEventListener('focusout', resume);
+    }
+    document.addEventListener('visibilitychange', play);
+    go(0); play();
+  })();
   var header = $('#siteheader');
   var contactMark = $('.contact-mark');
 
@@ -382,17 +448,4 @@ if ('serviceWorker' in navigator) {
   document.addEventListener('pointerover', near, { passive: true });
   document.addEventListener('touchstart', near, { passive: true });
   (window.requestIdleCallback || function (f) { setTimeout(f, 2500); })(go, { timeout: 4000 });
-})();
-
-/* 카카오톡 상담 버튼: 첫 화면을 지나면 나타납니다 */
-(function () {
-  var fab = document.getElementById('kakao-fab');
-  if (!fab) return;
-  var ticking = false;
-  function update() {
-    ticking = false;
-    fab.classList.toggle('is-on', window.scrollY > Math.min(innerHeight * 0.6, 520));
-  }
-  addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  update();
 })();

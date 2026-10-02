@@ -29,6 +29,10 @@
      --pad 하나로 좌우 여백과 최대폭을 동시에 처리합니다.
      화면이 --maxw보다 넓어지면 남는 폭이 그대로 여백이 됩니다. */
   --maxw:1360px;
+  /* 떠 있는 버튼 줄: 카카오톡 버튼과 히어로 넘기기가 같은 높이·같은 바닥선에 섭니다 */
+  --float-h:56px;
+  --float-x:max(18px,env(safe-area-inset-right));
+  --float-y:max(18px,env(safe-area-inset-bottom));
   --gutter:clamp(20px,5vw,72px);
   --pad:max(var(--gutter),calc((100% - var(--maxw)) / 2));
 
@@ -136,7 +140,14 @@ body::after{
   padding:0 var(--pad) clamp(70px,10vh,120px);
   margin-top:-92px;padding-top:92px;
 }
-.hero-media{position:absolute;inset:0;overflow:hidden;background:#E8B8C3}
+.hero-media{position:absolute;inset:0;overflow:hidden;background:#E8B8C3;touch-action:pan-y}
+/* 캐러셀: 슬라이드를 가로로 늘어놓고 트랙을 --hi(현재 번호)만큼 옮깁니다 */
+.hero-track{
+  display:flex;width:100%;height:100%;
+  transform:translate3d(calc(var(--hi,0) * -100%),0,0);
+  transition:transform 1.1s cubic-bezier(.65,0,.25,1);
+}
+.hero-slide{flex:0 0 100%;height:100%;overflow:hidden}
 .hero-media picture{display:block;width:100%;height:100%}
 .hero-img{
   width:100%;height:100%;object-fit:cover;object-position:72% 34%;
@@ -145,11 +156,13 @@ body::after{
   will-change:transform,filter;
 }
 .hero.ready .hero-img{transform:scale(var(--hs,1.02));filter:blur(var(--hb,0px))}
+/* 2번 매장 사진: 직원이 제목 오른쪽에 오도록 */
+.is-store .hero-img{object-position:60% 40%;transform-origin:60% 40%}
 .hero-veil{
   position:absolute;inset:0;pointer-events:none;
   background:
-    linear-gradient(180deg,#FCF3F4b3 0,#FCF3F400 120px),
-    linear-gradient(90deg,#FCF3F4e6 0%,#FCF3F4b8 24%,#FCF3F44d 42%,#FCF3F400 58%);
+    linear-gradient(180deg,#FFFFFFb3 0,#FFFFFF00 120px),
+    linear-gradient(90deg,#FFFFFFe6 0%,#FFFFFFb8 24%,#FFFFFF4d 42%,#FFFFFF00 58%);
 }
 /* 심볼을 콘텐츠 폭에 묶습니다 — 안 그러면 4K에서 혼자 멀리 떨어집니다 */
 .hero-markwrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:flex;justify-content:center}
@@ -167,9 +180,34 @@ body::after{
 .hero-cta .textlink{color:#4F4C2E}
 .hero-tags li{background:#ffffffb3;backdrop-filter:blur(6px)}
 
+/* 캐러셀 넘기기: 오른쪽 아래의 화살표와 점 (카카오톡 버튼 왼쪽에 둡니다) */
+.hero-ctrl{
+  position:absolute;right:calc(var(--float-x) + var(--float-h) + 12px);bottom:var(--float-y);z-index:2;
+  height:var(--float-h);
+  display:flex;align-items:center;gap:4px;padding:4px;border-radius:40px;
+  background:#ffffffb3;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.hero-arrow{
+  display:grid;place-items:center;width:calc(var(--float-h) - 8px);height:calc(var(--float-h) - 8px);border:0;border-radius:50%;
+  background:transparent;color:var(--ink);cursor:pointer;transition:background .25s;
+}
+.hero-arrow:hover{background:#ffffffcc}
+.hero-arrow .ms{width:24px;height:24px}
+.hero-dots{display:flex;align-items:center;gap:2px}
+.hero-dots button{
+  position:relative;width:22px;height:calc(var(--float-h) - 8px);border:0;padding:0;background:transparent;cursor:pointer;
+}
+.hero-dots button::before{
+  content:'';position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:8px;
+  background:#33342e4d;transform:translate(-50%,-50%);transition:width .4s,background .4s;
+}
+.hero-dots button[aria-current="true"]{width:34px}
+.hero-dots button[aria-current="true"]::before{width:24px;background:var(--ink)}
+.hero-arrow:focus-visible,.hero-dots button:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:20px}
+
 /* 아래로 내려가라는 작은 신호 */
 .hero-cue{
-  position:absolute;left:50%;bottom:clamp(22px,4vh,40px);z-index:1;transform:translateX(-50%);
+  position:absolute;left:50%;bottom:calc(var(--float-y) + (var(--float-h) - 44px) / 2);z-index:1;transform:translateX(-50%);
   display:grid;place-items:center;width:44px;height:44px;
 }
 .hero-cue span{
@@ -647,8 +685,12 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .hero{justify-content:flex-start;padding-top:calc(64px + 7vh)}
   .hero-media{top:52%}
   .hero-img{object-position:50% 8%}
-  .hero{background:#FCF3F4}
-  .hero-veil{background:linear-gradient(180deg,#FCF3F4 0%,#FCF3F4 52%,#FCF3F499 57%,#FCF3F400 66%)}
+  .is-store .hero-img{object-position:50% 30%;transform-origin:50% 30%}
+  /* 오른쪽은 카카오톡 버튼 자리라, 넘기기는 왼쪽에 같은 여백으로 마주 둡니다 */
+  .hero-ctrl{left:max(18px,env(safe-area-inset-left));right:auto}
+  .hero-cue{display:none}  /* 좁은 화면에서는 넘기기와 겹쳐서 뺍니다 */
+  .hero{background:#FFFFFF}
+  .hero-veil{background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 52%,#FFFFFF99 57%,#FFFFFF00 66%)}
   .faq-list summary{gap:14px}
   .foot-top{margin-bottom:34px}
   .totop{margin-left:0;width:100%}
@@ -669,6 +711,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   *,*::before,*::after{transition:none!important;animation:none!important}
   .split .w>i{transform:none}
   .hero-img{transform:none!important;filter:none!important}
+  .hero-track{transition:none}
   .hero-cue span::after{animation:none}
   .manifesto-text .mw{color:var(--ink)}
   .stack li{position:relative;top:auto}
@@ -765,18 +808,19 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
 .way-actions .kakao-btn .kk-dot{width:28px;height:28px}
 
 .kakao-fab{
-  position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;
-  display:flex;align-items:center;gap:0;height:56px;padding:0 13px;border-radius:40px;
+  position:fixed;right:var(--float-x);bottom:var(--float-y);z-index:70;
+  display:flex;align-items:center;gap:0;height:var(--float-h);padding:0 13px;border-radius:40px;
   background:var(--white);color:var(--ink);font-size:.9rem;font-weight:600;
   box-shadow:0 14px 34px #33342e29,0 0 0 1px #33342e0f;
-  opacity:0;transform:translateY(16px) scale(.92);pointer-events:none;
-  transition:opacity .45s ease,transform .6s cubic-bezier(.16,1,.3,1),gap .45s cubic-bezier(.16,1,.3,1),padding .45s cubic-bezier(.16,1,.3,1),box-shadow .35s;
+  transition:gap .45s cubic-bezier(.16,1,.3,1),padding .45s cubic-bezier(.16,1,.3,1),box-shadow .35s;
+  animation:fab-in .6s .5s cubic-bezier(.16,1,.3,1) both;
 }
-.kakao-fab.is-on{opacity:1;transform:none;pointer-events:auto}
+/* 처음부터 보이되, 페이지가 열릴 때 살짝 떠오릅니다 */
+@keyframes fab-in{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}
 .kk-label{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .45s cubic-bezier(.16,1,.3,1)}
 .kakao-fab:hover,.kakao-fab:focus-visible{gap:10px;padding-right:20px;box-shadow:0 18px 40px #33342e33,0 0 0 1px #33342e14}
 .kakao-fab:hover .kk-label,.kakao-fab:focus-visible .kk-label{max-width:9em}
-@media(max-width:700px){.kakao-fab{height:52px;padding:0 11px}}
+@media(max-width:700px){:root{--float-h:52px}.kakao-fab{padding:0 11px}}
 @media(prefers-reduced-motion:reduce){.kakao-fab,.kk-label{transition:none}}
 @media print{.kakao-fab{display:none}}
 
