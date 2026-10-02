@@ -45,12 +45,23 @@
 
 <!-- 01 ─ 히어로 ─────────────────────────────────────── -->
 <section class="hero" id="top">
-  <!-- 전면 히어로: 사진 한 장이 첫 화면을 채웁니다. 모바일은 인물 중심의 세로 사진을 씁니다. -->
-  <div class="hero-media">
-    <picture>
-      <source media="(max-width: 700px)" srcset="assets/hero-model-m.webp" width="903" height="1129">
-      <img class="hero-img" id="heroimg" src="assets/hero-model.webp" alt="분홍 벽 앞에서 메탈 쿠션 팩트를 든 모델" width="2000" height="1129" fetchpriority="high" decoding="async">
-    </picture>
+  <!-- 전면 히어로 캐러셀: 사진이 좌우로 넘어가며 첫 화면을 채웁니다. 모바일은 인물 중심의 세로 사진을 씁니다.
+       사진을 더하려면 .hero-slide를 하나 더 넣고, 아래 .hero-dots에 버튼을 하나 더 넣습니다. -->
+  <div class="hero-media" id="herocarousel" aria-roledescription="carousel" aria-label="뷰티오라 대표 사진">
+    <div class="hero-track" id="herotrack" aria-live="off">
+      <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="1 / 2">
+        <picture>
+          <source media="(max-width: 700px)" srcset="assets/hero-model-m.webp" width="903" height="1129">
+          <img class="hero-img" id="heroimg" src="assets/hero-model.webp" alt="분홍 벽 앞에서 메탈 쿠션 팩트를 든 모델" width="2000" height="1129" fetchpriority="high" decoding="async">
+        </picture>
+      </div>
+      <div class="hero-slide is-store" role="group" aria-roledescription="slide" aria-label="2 / 2" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 700px)" srcset="assets/hero-store-m.webp" width="753" height="941">
+          <img class="hero-img" src="assets/hero-store.webp" alt="뷰티오라 매대 앞에서 직원이 고객에게 시카 세럼을 소개하는 모습" width="1672" height="941" decoding="async">
+        </picture>
+      </div>
+    </div>
   </div>
   <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-markwrap" aria-hidden="true">
@@ -70,6 +81,14 @@
         <li>채널 영업 대행</li><li>상품 매입 유통</li><li>국내외 채널 확장</li>
       </ul>
     </div>
+  </div>
+  <div class="hero-ctrl" role="group" aria-label="대표 사진 넘기기">
+    <button class="hero-arrow" type="button" data-dir="-1" aria-label="이전 사진" aria-controls="herotrack"><svg class="ms" data-icon="chevron_left" viewBox="0 -960 960 960" aria-hidden="true" focusable="false"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/></svg></button>
+    <div class="hero-dots">
+      <button type="button" aria-label="1번 사진 보기" aria-controls="herotrack" aria-current="true"></button>
+      <button type="button" aria-label="2번 사진 보기" aria-controls="herotrack"></button>
+    </div>
+    <button class="hero-arrow" type="button" data-dir="1" aria-label="다음 사진" aria-controls="herotrack"><svg class="ms" data-icon="chevron_right" viewBox="0 -960 960 960" aria-hidden="true" focusable="false"><path d="M504-480 348-636q-11-11-11-28t11-28q11-11 28-11t28 11l184 184q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L404-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l156-156Z"/></svg></button>
   </div>
   <a class="hero-cue" href="#about" aria-label="다음 내용으로 내려가기"><span></span></a>
 </section>
