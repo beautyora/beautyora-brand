@@ -528,19 +528,32 @@
     sendErr.hidden = false;
     sendErr.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
   }
+  // 접수증은 개인정보 안내 문장이 아닌 단답형 이름 질문에서만 읽습니다.
+  function receiptTextValue(role) {
+    var patterns = role === 'person' ? [
+      /^(?:담당자|신청자|신청인)\s*(?:명|성함|성명|이름)?(?:$|\s*[(（:：/])/,
+      /^(?:성함|성명|이름)(?:$|\s*[(（:：/])/
+    ] : [/^(?:회사\s*명|상호(?:명)?)(?:$|\s*[(（:：/])/];
+    var ids = Object.keys(questions);
+    for (var p = 0; p < patterns.length; p++) {
+      for (var i = 0; i < ids.length; i++) {
+        var q = questions[ids[i]], title = String(q.title || '').trim();
+        if (q.type !== 'text' || /개인정보|동의|수집|이용/.test(title) || !patterns[p].test(title)) continue;
+        var value = valueOf(ids[i]);
+        if (typeof value === 'string' && value.trim()) return value.trim();
+      }
+    }
+    return '';
+  }
   function buildReceipt() {
     var rows = [['접수번호', docNo, 'no']];
     var now = new Date();
     rows.push(['접수 일시', ymd(now, '. ') + '  ' + pad(now.getHours()) + ':' + pad(now.getMinutes())]);
-    function byTitle(re) {
-      var id = Object.keys(questions).filter(function (k) { return re.test(questions[k].title || ''); })[0];
-      return id ? [].concat(valueOf(id)).join(', ') : '';
-    }
     function byKind(kind) {
       var f = $('.f[data-kind="' + kind + '"]', form);
       return f ? [].concat(valueOf(f.getAttribute('data-qid'))).join(', ') : '';
     }
-    var company = byTitle(/회사\s*명|상호/), brand = byKind('brand'), person = byTitle(/담당자\s*명|성함|이름/), mail = byKind('email');
+    var company = receiptTextValue('company'), brand = byKind('brand'), person = receiptTextValue('person'), mail = byKind('email');
     if (company) rows.push(['회사명', company]);
     if (brand) rows.push(['브랜드명', brand]);
     if (person) rows.push(['담당자', person]);
