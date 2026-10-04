@@ -138,8 +138,7 @@ function doPost(e) {
 
         var r;
         if (type === T.DATE) {
-          var p = String(v).split('-');
-          r = typed.createResponse(new Date(+p[0], +p[1] - 1, +p[2]));
+          r = typed.createResponse(formDate_(v));
         } else if (type === T.SCALE) {
           r = typed.createResponse(Number(v));
         } else if (type === T.CHECKBOX) {
@@ -167,4 +166,34 @@ function out_(body) {
   return ContentService
     .createTextOutput(typeof body === 'string' ? body : JSON.stringify(body))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 날짜 입력은 시간대가 없는 달력 날짜입니다. 로컬 자정으로 바꾸면
+// Asia/Seoul의 2026-10-04가 UTC에서 2026-10-03이 되므로 UTC로 고정합니다.
+function formDate_(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error('date');
+  var parts = value.split('-').map(Number);
+  var date = new Date(0);
+  date.setUTCFullYear(parts[0], parts[1] - 1, parts[2]);
+  date.setUTCHours(0, 0, 0, 0);
+  if (parts[0] < 1 || date.getUTCFullYear() !== parts[0] ||
+      date.getUTCMonth() !== parts[1] - 1 || date.getUTCDate() !== parts[2]) throw new Error('date');
+  return date;
+}
+
+// 편집기에서 실행하는 제출 없는 진단. 폼/시트/Notion 응답을 저장하지 않습니다.
+// 결과의 candidate가 2026-10-04인지 확인한 뒤 기존 웹 앱 배포 버전을 갱신합니다.
+function inspectDateResponse() {
+  var form = FormApp.getActiveForm();
+  var rows = form.getItems(FormApp.ItemType.DATE).map(function (item) {
+    var typed = item.asDateItem();
+    return {
+      itemId: String(item.getId()), title: item.getTitle(),
+      legacy: typed.createResponse(new Date(2026, 9, 4)).getResponse(),
+      candidate: typed.createResponse(formDate_('2026-10-04')).getResponse()
+    };
+  });
+  var result = { scriptTimeZone: Session.getScriptTimeZone(), dates: rows };
+  console.log(JSON.stringify(result));
+  return result;
 }
