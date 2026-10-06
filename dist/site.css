@@ -158,6 +158,8 @@ body::after{
 .hero.ready .hero-img{transform:scale(var(--hs,1.02));filter:blur(var(--hb,0px))}
 /* 2번 매장 사진: 직원이 제목 오른쪽에 오도록 */
 .is-store .hero-img{object-position:60% 40%;transform-origin:60% 40%}
+/* 3번 약국 진열대 사진: 진열대가 오른쪽, 흐린 매장이 제목 뒤에 오도록 */
+.is-display .hero-img{object-position:70% 50%;transform-origin:70% 50%}
 .hero-veil{
   position:absolute;inset:0;pointer-events:none;
   background:
@@ -686,6 +688,7 @@ footer{background:var(--grey-bg);padding:clamp(56px,8vh,86px) var(--pad) clamp(3
   .hero-media{top:52%}
   .hero-img{object-position:50% 8%}
   .is-store .hero-img{object-position:50% 30%;transform-origin:50% 30%}
+  .is-display .hero-img{object-position:50% 20%;transform-origin:50% 20%}
   /* 오른쪽은 카카오톡 버튼 자리라, 넘기기는 왼쪽에 같은 여백으로 마주 둡니다 */
   .hero-ctrl{left:max(18px,env(safe-area-inset-left));right:auto}
   .hero-cue{display:none}  /* 좁은 화면에서는 넘기기와 겹쳐서 뺍니다 */
